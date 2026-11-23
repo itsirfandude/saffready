@@ -1,0 +1,13 @@
+"use client";
+import { useEffect, useMemo, useState } from "react";
+import { AppHeader } from "@/components/AppHeader";
+import { FreshnessLabel } from "@/components/FreshnessLabel";
+import { MasjidList } from "@/components/MasjidList";
+import { NextIqamahHero } from "@/components/NextIqamahHero";
+import { usePreferences } from "@/components/PreferencesProvider";
+import { masjids } from "@/src/lib/data";
+import { getAllNextIqamah, type NextIqamah } from "@/src/lib/next-iqamah";
+import { sortByDistance, type UserLocation } from "@/src/lib/distance";
+
+type SortMode = "next" | "distance";
+export function ClientHome(){const {timeFormat}=usePreferences(); const [now,setNow]=useState(new Date()); const [sortMode,setSortMode]=useState<SortMode>("next"); const [location,setLocation]=useState<UserLocation|null>(null); const [locationState,setLocationState]=useState<"idle"|"loading"|"ready"|"error">("idle"); useEffect(()=>{const refresh=()=>setNow(new Date()); const id=window.setInterval(refresh,30000); document.addEventListener("visibilitychange",refresh); return()=>{clearInterval(id);document.removeEventListener("visibilitychange",refresh)}},[]); const nextItems=useMemo(()=>getAllNextIqamah(masjids,now),[now]); const items=useMemo(()=>sortMode==="distance"&&location?sortByDistance(nextItems,location):nextItems,[location,nextItems,sortMode]); const next=nextItems.find((item): item is NextIqamah=>(!("unavailable" in item))); const chooseDistance=()=>{setSortMode("distance"); if(location||locationState==="loading")return; if(!navigator.geolocation){setLocationState("error");return;} setLocationState("loading"); navigator.geolocation.getCurrentPosition((position)=>{setLocation({latitude:position.coords.latitude,longitude:position.coords.longitude});setLocationState("ready")},()=>setLocationState("error"),{enableHighAccuracy:false,timeout:10000,maximumAge:300000});}; return <main className="mx-auto min-h-screen max-w-[520px] px-4 pb-10 sm:px-6"><AppHeader/><div className="gold-rule mb-7"/>{next&&<NextIqamahHero next={next} timeFormat={timeFormat}/>}<div className="mt-5"><FreshnessLabel date={masjids[0].prayers[0].observedOn!}/></div><MasjidList items={items} timeFormat={timeFormat} sortMode={sortMode} onNext={()=>setSortMode("next")} onDistance={chooseDistance} locationState={locationState}/><footer className="mt-10 border-t pt-5 text-center text-xs leading-6 text-[var(--text-muted)]">Community timetable · Source: noticeboard photographs<br/>SaffReady helps you find the next congregation.</footer></main> }

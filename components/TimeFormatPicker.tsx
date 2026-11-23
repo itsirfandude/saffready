@@ -1,0 +1,3 @@
+"use client";
+import { usePreferences } from "@/components/PreferencesProvider";
+export function TimeFormatPicker(){const {timeFormat,setTimeFormat}=usePreferences();return <section className="mt-7"><h3 className="mb-3 font-semibold">Time format</h3><div className="grid grid-cols-2 gap-2">{([["12h","12-hour"],["24h","24-hour"]] as const).map(([key,label])=><button key={key} onClick={()=>setTimeFormat(key)} aria-pressed={timeFormat===key} className={`min-h-11 rounded-lg border px-3 text-left ${timeFormat===key?"bg-[var(--accent)] text-[var(--bg)]":"ink-card"}`}>{label}<span className="ml-2 text-xs opacity-70">{key==="12h"?"5:25 PM":"17:25"}</span></button>)}</div></section>}

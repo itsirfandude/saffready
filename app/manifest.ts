@@ -1,0 +1,2 @@
+import type { MetadataRoute } from "next";
+export default function manifest(): MetadataRoute.Manifest { return { name:"SaffReady", short_name:"SaffReady", description:"Tamil-first congregation timings for nearby Coimbatore masjids", start_url:"/", display:"standalone", background_color:"#f2ecdc", theme_color:"#2b4c7e", icons:[{src:"/icons/icon.svg",sizes:"192x192",type:"image/svg+xml"},{src:"/icons/icon.svg",sizes:"512x512",type:"image/svg+xml",purpose:"maskable"}]}; }
