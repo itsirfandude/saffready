@@ -1,0 +1,3 @@
+import {describe,it,expect} from "vitest";
+import {formatIqamahValue} from "@/src/lib/format-iqamah";
+describe("localized Iqamah display",()=>{it("renders immediately after Adhan without duplicating the Adhan time",()=>{const value={type:"after_adhan" as const,offsetMin:0};expect(formatIqamahValue(value,"18:03","ta")).toBe("உடன்");expect(formatIqamahValue(value,"18:03","en")).toBe("Immediately")});it("renders future offsets and fixed times",()=>{const value={type:"after_adhan" as const,offsetMin:5};expect(formatIqamahValue(value,"18:03","ta")).toBe("5 நிமிடங்கள் கழித்து");expect(formatIqamahValue(value,"18:03","en")).toBe("After 5 min");expect(formatIqamahValue("18:10","18:03","en","24h")).toBe("18:10")})});

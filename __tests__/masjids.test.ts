@@ -1,37 +1,17 @@
-import { describe, expect, it } from "vitest";
-import { masjids } from "@/src/lib/data";
-import { formatDistance, haversineDistanceKm, sortByDistance } from "@/src/lib/distance";
-
-describe("masjid directory", () => {
-  it("contains ten masjids with valid coordinates and detail ids", () => {
-    expect(masjids).toHaveLength(10);
-    for (const masjid of masjids) {
-      expect(masjid.lat).toBeGreaterThanOrEqual(-90);
-      expect(masjid.lat).toBeLessThanOrEqual(90);
-      expect(masjid.lng).toBeGreaterThanOrEqual(-180);
-      expect(masjid.lng).toBeLessThanOrEqual(180);
-      expect(masjid.prayers).toHaveLength(6);
-    }
-  });
-
-  it("preserves the corrected new schedules and quiet affiliations", () => {
-    const aamina = masjids.find((item) => item.name_en === "Masjid Aamina Binth Wahab")!;
-    const jannath = masjids.find((item) => item.name_en === "Masjidul Jannath")!;
-    expect(aamina.affiliation).toBe("SUNNAT JAMAAT");
-    expect(aamina.prayers.find((item) => item.prayer === "fajr")?.adhan).toBe("05:00");
-    expect(aamina.prayers.find((item) => item.prayer === "maghrib")?.iqamah).toEqual({ type: "after_adhan", offsetMin: 0 });
-    expect(jannath.prayers.find((item) => item.prayer === "jumuah")).toMatchObject({ adhan: "12:30", iqamah: "13:10" });
-    expect(masjids.find((item) => item.name_en === "Masjid Arafa")?.affiliation).toBeNull();
-  });
+import {describe,expect,it} from "vitest";
+import {masjids} from "@/src/lib/data";
+import {formatDistance,haversineDistanceKm,sortByDistance} from "@/src/lib/distance";
+import {validateMasjids} from "@/src/lib/validation";
+const get=(name:string)=>{const item=masjids.find(m=>m.name_en===name);if(!item)throw new Error(`Missing ${name}`);return item};
+const prayer=(name:string,key:string)=>get(name).prayers.find(p=>p.prayer===key)!;
+describe("masjid directory",()=>{
+ it("contains thirteen distinct records and all original ten identities",()=>{expect(masjids).toHaveLength(13);expect(new Set(masjids.map(m=>m.id)).size).toBe(13);for(const name of ["Masjidus Salaam","Masjid Maalikul Mulk","Masjidul Quddus","Masjidul Mu'mineen","Masjid Arafa","Masjidul Akram","Masjidul Jannath","Masjid Aamina Binth Wahab","Masjid Ummu Kulsum Azim","Masjidul Muslimeen"])expect(masjids.some(m=>m.name_en===name)).toBe(true)});
+ it("preserves every final affiliation and corrected location data",()=>{const expected:[[string,string|null],...Array<[string,string|null]>]=[["Masjidus Salaam","TNTJ"],["Masjid Maalikul Mulk","JAQH"],["Masjidul Quddus","YMJ"],["Masjidul Mu'mineen","SUNNAT JAMAAT"],["Masjid Arafa",null],["Masjidul Akram","NTF"],["Masjidul Jannath","TMMK TRUST"],["Masjid Aamina Binth Wahab","SUNNAT JAMAAT"],["Masjid Ummu Kulsum Azim","AHLE HADEES"],["Masjidul Muslimeen","JAQH"],["Masjidul Kousar",null],["Irshadhul Muslimeen Shafiyya Sunnath Jamaath","SUNNAT JAMAAT"],["Mifthahul Janna Sunnath Val Jamath Masjid","SUNNAT JAMAAT"]];for(const [name,affiliation] of expected)expect(get(name).affiliation??null).toBe(affiliation);expect(get("Masjidul Muslimeen").address_ta).toBe("Vincent Road, Coimbatore.");expect(get("Masjidul Muslimeen").lat).toBe(10.9912707);expect(get("Masjidul Muslimeen").mapsUrl).toBe("https://maps.app.goo.gl/VVkVAUnGhjLxtBkx5")});
+ it("stores new names, observed dates and supplied mapping data without guessing pins",()=>{expect(get("Masjidul Kousar").address_ta).toContain("165, G.M. Nagar");expect(get("Masjidul Kousar").lat).toBeNull();expect(get("Irshadhul Muslimeen Shafiyya Sunnath Jamaath").name_ta).toBe("இர்ஷாதுல் முஸ்லிம் ஷாஃபியா சுன்னத் ஜமாஅத்");expect(get("Irshadhul Muslimeen Shafiyya Sunnath Jamaath").mapsUrl).toBe("https://maps.app.goo.gl/NEVTinzoGEME41UT6");expect(get("Irshadhul Muslimeen Shafiyya Sunnath Jamaath").lat).toBeNull();const m=get("Mifthahul Janna Sunnath Val Jamath Masjid");expect(m.name_ta).toBe("மிப்தாஹுல் ஜன்னா சுன்னத் வல் ஜமாத் மஸ்ஜித்");expect(m.mapsName).toBe("Masjidul Ayesha Sunnath Jama-ath");expect(m.mapsUrl).toBe("https://maps.app.goo.gl/Wm4JRb1Cjx2Z1QWf7");expect(m.lat).toBeNull();expect(m.address_ta).toContain("XXQ8+4R8")});
+ it("marks Jumuah fixed for every masjid",()=>{for(const m of masjids)expect(m.prayers.find(p=>p.prayer==="jumuah")?.timingPattern).toBe("fixed")});
+ it("matches the three newly supplied schedules",()=>{expect(get("Masjidul Kousar").prayers.map(p=>[p.adhan,p.iqamah])).toEqual([["05:05","05:35"],["12:40","13:00"],["16:00","16:15"],["18:00",{type:"after_adhan",offsetMin:0}],["20:00","20:15"],["12:40","13:30"]]);expect(get("Irshadhul Muslimeen Shafiyya Sunnath Jamaath").prayers.map(p=>[p.adhan,p.iqamah])).toEqual([["05:02","05:22"],["12:45","13:00"],["16:00","16:15"],["18:03",{type:"after_adhan",offsetMin:0}],["19:16","19:31"],["12:40","13:30"]]);expect(get("Mifthahul Janna Sunnath Val Jamath Masjid").prayers.map(p=>[p.adhan,p.iqamah])).toEqual([["05:05","05:35"],["12:45","13:00"],["16:00","16:15"],["18:03",{type:"after_adhan",offsetMin:0}],["19:16","19:35"],["12:40","13:10"]])});
+ it("updates Ummu Kulsum and keeps observances separate",()=>{const m=get("Masjid Ummu Kulsum Azim");expect(m.prayers.map(p=>[p.adhan,p.iqamah])).toEqual([["05:08","05:30"],["12:55","13:10"],["15:55","16:10"],["17:56","18:03"],["19:55","20:10"],["12:55","13:30"]]);expect(m.observedOn).toBe("2026-11-23");expect(m.additionalObservances?.map(x=>[x.name_en,x.time])).toEqual([["Sunrise","06:21"],["Ishraq","06:35"],["Solar noon","11:59"],["Sunset","17:55"]])});
+ it("preserves prior schedules, after-Adhan semantics and validates the complete payload",()=>{expect(prayer("Masjidul Jannath","jumuah")).toMatchObject({adhan:"12:30",iqamah:"13:10"});expect(prayer("Masjid Aamina Binth Wahab","maghrib").iqamah).toEqual({type:"after_adhan",offsetMin:0});expect(prayer("Masjidul Muslimeen","fajr")).toMatchObject({adhan:"05:07",iqamah:"05:27"});expect(validateMasjids(masjids)).toBe(true)});
+ it("rejects malformed, missing and duplicate records instead of publishing blanks",()=>{const broken=structuredClone(masjids);broken[0].prayers[0].adhan="5:05";expect(validateMasjids(broken)).toBe(false);expect(validateMasjids(masjids.slice(0,-1))).toBe(false);const duplicate=structuredClone(masjids);duplicate[12].id=duplicate[0].id;expect(validateMasjids(duplicate)).toBe(false)});
 });
-
-describe("distance sorting", () => {
-  it("calculates straight-line distance and sorts nearest first", () => {
-    const items = masjids.slice(0, 3).map((masjid) => ({ masjid }));
-    const sorted = sortByDistance(items, { latitude: 10.9818, longitude: 76.9646 });
-    expect(sorted[0].masjid.name_en).toBe("Masjidus Salaam");
-    expect(haversineDistanceKm({ latitude: 0, longitude: 0 }, { latitude: 0, longitude: 0 })).toBe(0);
-    expect(formatDistance(0.45)).toBe("450 m away");
-    expect(formatDistance(1.2)).toBe("1.2 km away");
-  });
-});
+describe("distance sorting",()=>{it("uses Haversine straight-line distance and sorts nearest first",()=>{const rows=masjids.slice(0,3).map(m=>({masjid:m}));const sorted=sortByDistance(rows,{latitude:10.9818,longitude:76.9646});expect(sorted[0].masjid.name_en).toBe("Masjidus Salaam");expect(haversineDistanceKm({latitude:0,longitude:0},{latitude:0,longitude:0})).toBe(0);expect(formatDistance(.45)).toBe("450 m away");expect(formatDistance(1.2)).toBe("1.2 km away")})});

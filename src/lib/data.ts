@@ -14,5 +14,5 @@ const existingMeta: Record<string, Pick<Masjid, "lat" | "lng" | "affiliation" | 
 export const masjids: Masjid[] = [
   ...(rawMasjids as Omit<Masjid, "affiliation" | "mapsUrl">[]).map((masjid) => ({ ...masjid, ...existingMeta[masjid.id] })),
   ...additionalMasjids,
-];
+].map((masjid) => ({ ...masjid, timingPattern: masjid.timingPattern ?? "unknown", active: true, prayers: masjid.prayers.map(p => p.prayer === "jumuah" ? { ...p, timingPattern: "fixed" as const } : p) }));
 export function getMasjid(id: string) { return masjids.find((masjid) => masjid.id === id); }

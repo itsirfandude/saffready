@@ -31,10 +31,10 @@ const amiri = localFont({
   preload: true,
 });
 
-export const metadata: Metadata = { title: "SaffReady · Coimbatore Jamaat timings", description: "SaffReady helps you find the next congregation across Coimbatore masjids", manifest: "/manifest.webmanifest", appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "SaffReady" } };
+export const metadata: Metadata = { title: "SaffReady · Find your next Jamaat.", description: "Find your next Jamaat across Coimbatore masjids.", manifest: "/manifest.webmanifest", appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "SaffReady" } };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#f2ecdc" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const themeScript = `(() => { try { const saved = localStorage.getItem('masjid-theme'); const system = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'classic'; document.documentElement.dataset.theme = saved || system; } catch (_) {} })()`;
+  const themeScript = `(() => { try { const saved = localStorage.getItem('masjid-theme'); const language = localStorage.getItem('saffready-language'); const system = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'classic'; document.documentElement.dataset.theme = saved || system; document.documentElement.lang = language || 'ta'; } catch (_) {} })()`;
   return <html lang="ta" suppressHydrationWarning><head><Script id="theme-initialization" strategy="beforeInteractive">{themeScript}</Script></head><body className={`${inter.variable} ${notoSansTamil.variable} ${amiri.variable}`}><PreferencesProvider>{children}</PreferencesProvider></body></html>;
 }

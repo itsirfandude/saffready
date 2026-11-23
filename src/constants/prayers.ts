@@ -8,6 +8,7 @@ export const PRAYER_TA = {
   isha: "இஷா",
   jumuah: "ஜுமுஆ",
 } as const;
+export const PRAYER_EN = { fajr:"Fajr", dhuhr:"Dhuhr", asr:"Asr", maghrib:"Maghrib", isha:"Isha", jumuah:"Jumuah" } as const;
 
 export const PRAYER_AR = {
   fajr: "الفجر",

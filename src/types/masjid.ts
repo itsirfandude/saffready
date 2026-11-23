@@ -11,11 +11,14 @@ export interface PrayerRecord {
   source: "noticeboard_photo";
   handwritten: boolean;
   unclear: boolean;
+  timingPattern?: TimingPattern;
 }
+
+export type TimingPattern = "fixed" | "seasonal" | "variable" | "unknown";
 
 export interface Masjid {
   id: string;
-  name_ta: string;
+  name_ta: string | null;
   name_en: string;
   address_ta: string | null;
   lat: number | null;
@@ -23,4 +26,13 @@ export interface Masjid {
   affiliation?: string | null;
   mapsUrl?: string | null;
   prayers: PrayerRecord[];
+  mapsName?: string | null;
+  active?: boolean;
+  observedOn?: string | null;
+  source?: string;
+  notes?: string | null;
+  timingPattern?: TimingPattern;
+  updatedAt?: string | null;
+  updatedBy?: string | null;
+  additionalObservances?: { name_en: string; name_ta: string; time: string }[];
 }

@@ -1,21 +1,41 @@
 # SaffReady
 
-Tamil-first, mobile-first PWA for comparing the next congregation time across ten Coimbatore masjids.
+**Find your next Jamaat.**
 
-## Setup
+SaffReady is a Tamil-first directory and prayer-time PWA for 13 Coimbatore masjids. The warm paper and dark themes, all six original theme tokens, and locally bundled Noto Sans Tamil, Inter and Amiri fonts are retained.
 
-Requires Node.js 20+ and npm. Run `npm install`, then `npm run dev` and open `http://localhost:3000`. Run `npm run typecheck`, `npm test`, and `npm run build` before deployment.
+## Local development
 
-## Data and deployment
+Requires Node.js 20+ and npm.
 
-The authoritative source is `data/masjids.json`. Preserve `HH:mm` values, observation metadata, and handwritten flags when updating it. Commit the change and redeploy on Vercel; the new JSON is included in the deployment. No backend or database is used.
+```sh
+npm install
+npm run dev
+```
 
-Set `NEXT_PUBLIC_WHATSAPP` to the WhatsApp number (digits only, with country code) to enable the report link. Without it, reporting remains disabled. Replace the generated/placeholder icons in `public/icons/` when branding assets are available. The deployment URL is a placeholder until configured.
+Run `npm run test`, `npm run typecheck`, and `npm run build` before deployment.
 
-## PWA and offline use
+## Timetable source and phone editing
 
-The app can be installed from Android Chrome’s “Add to Home screen” or iOS Safari’s Share → “Add to Home Screen”. The service worker caches the application shell and uses a versioned cache; masjid data is treated as a convenience cache and the repository JSON remains the source of truth. QR codes can point to the deployed placeholder URL and can be generated with any QR generator.
+The bundled records in `data/masjids.json` and `src/lib/additional-masjids.ts` are the safe initial/offline dataset. For live edits without a SaffReady deployment, configure a private Google spreadsheet and its read-only Apps Script publisher using [`google-sheets/SETUP.md`](google-sheets/SETUP.md) and [`google-sheets/Code.gs`](google-sheets/Code.gs).
 
-## Preferences and themes
+Add the Apps Script deployment URL to the hosting environment as `SHEETS_JSON_URL`. The browser calls SaffReady's same-origin `/api/timetable` route; no edit credentials or spreadsheet link is sent to the browser. The API reads a complete valid dataset, and the client retains the most recent successful response for offline use. The app refreshes on load, every five minutes, and when foregrounded. If the published sheet is incomplete or malformed, Apps Script returns its last valid snapshot; if the source is unavailable, SaffReady marks cached data stale.
 
-Theme and 12/24-hour preferences are stored in localStorage. The default time display is 12-hour; scheduling always uses canonical 24-hour values. Six themes are available from the settings button. Theme tokens live in `app/globals.css`.
+The sheet is private. Deploy Apps Script as **execute as me** and permit access to **anyone** only for the read-only web app output. The script has no public write action and returns no settings or history tab contents. This makes published timetables public while keeping the spreadsheet itself private. A one-minute timing edit is published on the next refresh and does not require a Vercel deployment.
+
+## Environment configuration
+
+- `SHEETS_JSON_URL`: Apps Script `/exec` URL, configured server-side.
+- `COIMBATORE_LATITUDE` and `COIMBATORE_LONGITUDE`: optional fixed weather service-area coordinates. Defaults are 10.9940, 76.9660. No browser location permission is used for weather.
+- `NEXT_PUBLIC_WHATSAPP`: optional report-a-change number, digits with country code.
+- `NEXT_PUBLIC_QURAN_APP_URL`: optional Qur'an app link. It is omitted until the real destination is supplied; the promotion copy, name placeholder and enable switch are centralized in `src/constants/app.ts`.
+
+Weather and astronomical sunrise/sunset are requested from the Open-Meteo Forecast API through `/api/weather`, cached separately from timetable data and revalidated every five minutes. The interface identifies Open-Meteo as the source and labels cached weather when the service is unavailable.
+
+## Preferences and PWA
+
+Tamil is the default language. The `தமிழ் | EN` selector and theme/time-format preferences are stored locally. Six themes remain available. The app can be installed from Android Chrome or iOS Safari; the service worker keeps an offline shell and network-first navigation so it does not indefinitely pin old HTML.
+
+## Deployment
+
+Vercel hosts the Next.js app. Configure the environment variables above, then deploy through the project's existing Vercel integration. Do not put spreadsheet edit credentials, service-account keys, or private secrets in `NEXT_PUBLIC_*` variables. Timetable changes made in the private Sheet do not require a code deployment.
