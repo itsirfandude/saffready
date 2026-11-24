@@ -26,23 +26,22 @@ function resolvedTime(record: PrayerRecord): string | null {
   return null;
 }
 
-function indiaCalendarDate(now: Date): Date {
+function indiaCalendarParts(now: Date) {
   const parts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: false }).formatToParts(now);
-  const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)]));
-  return new Date(Date.UTC(values.year, values.month - 1, values.day, values.hour % 24, values.minute, values.second));
+  return Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)])) as Record<string, number>;
 }
 
 function istDate(now: Date, dayOffset: number, time: string): Date {
-  const base = indiaCalendarDate(now);
-  base.setUTCDate(base.getUTCDate() + dayOffset);
+  const parts = indiaCalendarParts(now);
   const [hours, minutes] = time.split(":").map(Number);
-  base.setUTCHours(hours, minutes, 0, 0);
-  return base;
+  // Build the absolute instant for a Coimbatore wall-clock time (UTC+05:30).
+  return new Date(Date.UTC(parts.year, parts.month - 1, parts.day + dayOffset, hours, minutes) - 330 * 60_000);
 }
 
 export function getNextIqamah(masjid: Masjid, now = new Date()): NextIqamah | UnavailableIqamah {
-  const istNow = indiaCalendarDate(now);
-  const isFriday = istNow.getUTCDay() === 5;
+  const parts = indiaCalendarParts(now);
+  const calendarDate = new Date(Date.UTC(parts.year, parts.month - 1, parts.day));
+  const isFriday = calendarDate.getUTCDay() === 5;
   const candidates = PRAYER_ORDER.flatMap((prayer) => {
     const record = masjid.prayers.find((item) => item.prayer === prayer);
     const time = record ? resolvedTime(record) : null;
@@ -51,7 +50,7 @@ export function getNextIqamah(masjid: Masjid, now = new Date()): NextIqamah | Un
     const at = istDate(now, dayOffset, time);
     if (prayer === "dhuhr" && isFriday) return [];
     if (prayer === "jumuah" && !isFriday) return [];
-    if (at.getTime() > istNow.getTime()) return [{ prayer, time, at, dayOffset }];
+    if (at.getTime() > now.getTime()) return [{ prayer, time, at, dayOffset }];
     return [];
   }).sort((a, b) => a.at.getTime() - b.at.getTime());
   const next = candidates[0] ?? (() => {
@@ -60,7 +59,7 @@ export function getNextIqamah(masjid: Masjid, now = new Date()): NextIqamah | Un
     return time ? { prayer: "fajr" as PrayerKey, time, at: istDate(now, 1, time), dayOffset: 1 } : null;
   })();
   if (!next) return { masjid, unavailable: true };
-  return { masjid, prayer: next.prayer, time: next.time, at: next.at, minutesRemaining: Math.max(0, Math.ceil((next.at.getTime() - istNow.getTime()) / 60000)), tomorrow: next.dayOffset > 0 };
+  return { masjid, prayer: next.prayer, time: next.time, at: next.at, minutesRemaining: Math.max(0, Math.ceil((next.at.getTime() - now.getTime()) / 60000)), tomorrow: next.dayOffset > 0 };
 }
 
 export function getAllNextIqamah(masjids: Masjid[], now = new Date()) {
