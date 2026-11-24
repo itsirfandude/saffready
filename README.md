@@ -30,11 +30,15 @@ The sheet is private. Deploy Apps Script as **execute as me** and permit access 
 - `NEXT_PUBLIC_WHATSAPP`: optional report-a-change number, digits with country code.
 - `NEXT_PUBLIC_QURAN_APP_URL`: optional Qur'an app link. It is omitted until the real destination is supplied; the promotion copy, name placeholder and enable switch are centralized in `src/constants/app.ts`.
 
-Weather and astronomical sunrise/sunset are requested from the Open-Meteo Forecast API through `/api/weather`, cached separately from timetable data and revalidated every five minutes. The interface identifies Open-Meteo as the source and labels cached weather when the service is unavailable.
+Weather and astronomical sunrise/sunset are requested from the Open-Meteo Forecast API through `/api/weather`, cached separately from timetable data and revalidated every five minutes. Open-Meteo is attributed in the footer. Weather failures stay quiet in the home info line.
+
+The home page shows the oldest recorded noticeboard observation date across all masjids, separately from any API fetch time. Using the Distance tab or **Use my location** requests browser location only after that action. A successful result is reused in the current tab session for up to 20 minutes, held in memory and `sessionStorage`, then cleared; precise coordinates are not written to local storage or sent to the backend. Travel times are estimates based on straight-line distance with a 1.3 street-detour factor. Walking is estimated at 5 km/h, switching to a 15 km/h bicycle estimate when walking would exceed 20 minutes. Reachability includes a one-minute buffer.
 
 ## Preferences and PWA
 
 Tamil is the default language. The `தமிழ் | EN` selector and theme/time-format preferences are stored locally. Six themes remain available. The app can be installed from Android Chrome or iOS Safari; the service worker keeps an offline shell and network-first navigation so it does not indefinitely pin old HTML.
+
+The iOS standalone status-bar style is selected from the saved theme before hydration: light themes use `default`, and dark themes use `black-translucent`. iOS may not reread this metadata until the installed app is relaunched. Verify status-bar readability manually on a real iPhone or iPad after changing themes; this behavior has not been verified on a physical device.
 
 ## Deployment
 
