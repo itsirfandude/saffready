@@ -1,7 +1,92 @@
 "use client";
-import {useEffect,useState} from "react";
-import {formatTime} from "@/src/lib/format-time";
-import {usePreferences} from "@/components/PreferencesProvider";
-type Weather={current?:{temperature_2m:number;apparent_temperature:number;weather_code:number;relative_humidity_2m:number};daily?:{sunrise:string[];sunset:string[];daylight_duration:number[]};fetchedAt?:string;error?:string};
-const labels:Record<number,[string,string]>={0:["தெளிவான வானம்","Clear sky"],1:["பெரும்பாலும் தெளிவு","Mainly clear"],2:["பகுதி மேகமூட்டம்","Partly cloudy"],3:["மேகமூட்டம்","Overcast"],45:["மூடுபனி","Fog"],48:["மூடுபனி","Fog"],51:["தூறல்","Drizzle"],53:["தூறல்","Drizzle"],55:["தூறல்","Drizzle"],61:["மழை","Rain"],63:["மழை","Rain"],65:["கனமழை","Heavy rain"],80:["மழை","Rain showers"],81:["மழை","Rain showers"],82:["கனமழை","Heavy showers"]};
-export function DailyContext(){const {language,timeFormat}=usePreferences();const [now,setNow]=useState(new Date());const [weather,setWeather]=useState<Weather|null>(null);const [weatherStale,setWeatherStale]=useState(false);const ta=language==="ta";useEffect(()=>{const tick=()=>setNow(new Date());const timer=setInterval(tick,30000);return()=>clearInterval(timer)},[]);useEffect(()=>{let live=true;const refresh=async()=>{try{const r=await fetch("/api/weather",{cache:"no-store"});if(!r.ok)throw new Error();const data=await r.json();if(live&&!data.error){setWeather(data);setWeatherStale(false);localStorage.setItem("saffready-weather",JSON.stringify(data))}}catch{if(!live)return;setWeatherStale(true);try{const cached=JSON.parse(localStorage.getItem("saffready-weather")||"null");if(cached)setWeather(cached)}catch{}}};void refresh();const interval=setInterval(refresh,600000);const visible=()=>{if(document.visibilityState==="visible")void refresh()};document.addEventListener("visibilitychange",visible);window.addEventListener("online",refresh);return()=>{live=false;clearInterval(interval);document.removeEventListener("visibilitychange",visible);window.removeEventListener("online",refresh)}},[]);const p=weather?.current, daily=weather?.daily;const code=p?.weather_code;const condition=code===undefined?null:(labels[code]||["வானிலை","Weather"])[ta?0:1];const date=new Intl.DateTimeFormat(ta?"ta-IN":"en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"Asia/Kolkata"}).format(now);const clock=new Intl.DateTimeFormat(ta?"ta-IN":"en-IN",{hour:"numeric",minute:"2-digit",hour12:timeFormat==="12h",timeZone:"Asia/Kolkata"}).format(now);const sunrise=daily?.sunrise?.[0]?.slice(11,16)||null,sunset=daily?.sunset?.[0]?.slice(11,16)||null;const daylight=daily?.daylight_duration?.[0];const duration=daylight?`${Math.floor(daylight/3600)}h ${Math.floor(daylight%3600/60)}m`:null;const update=weather?.fetchedAt?new Intl.DateTimeFormat(ta?"ta-IN":"en-IN",{hour:"numeric",minute:"2-digit",timeZone:"Asia/Kolkata"}).format(new Date(weather.fetchedAt)):null;return <section className="mb-5 flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-b py-3 text-sm"><div><p className="font-semibold">{date} <span className="font-normal text-[var(--text-muted)]">· {clock}</span></p><p className="mt-1 text-xs text-[var(--text-muted)]">Coimbatore · Weather</p></div><div className="flex flex-wrap gap-x-5 gap-y-2 text-xs"><span>Sunrise <b>{sunrise?formatTime(sunrise,timeFormat):"—"}</b></span><span>Sunset <b>{sunset?formatTime(sunset,timeFormat):"—"}</b></span>{duration&&<span>Daylight <b>{duration}</b></span>}<span>{p?`${Math.round(p.temperature_2m)}°C · ${condition}`:(ta?"Weather கிடைக்கவில்லை":"Weather unavailable")}</span></div><p className={`w-full text-right text-[10px] text-[var(--text-muted)] ${weatherStale?"stale-label":""}`}>{p?`Source: Open-Meteo · ${update}${weatherStale?(ta?" · cached weather":" · cached weather"):""}`:(ta?"Weather service கிடைக்கவில்லை":"Weather service temporarily unavailable")}</p></section>}
+import { useEffect, useState } from "react";
+import { formatTime } from "@/src/lib/format-time";
+import { usePreferences } from "@/components/PreferencesProvider";
+import { copy } from "@/src/constants/strings";
+
+type Weather = {
+  current?: { temperature_2m: number; weather_code: number };
+  daily?: { sunrise: string[]; sunset: string[] };
+  fetchedAt?: string;
+  error?: string;
+};
+
+const labels: Record<number, [string, string]> = {
+  0: ["தெளிவான வானம்", "Clear sky"], 1: ["பெரும்பாலும் தெளிவு", "Mainly clear"],
+  2: ["பகுதி மேகமூட்டம்", "Partly cloudy"], 3: ["மேகமூட்டம்", "Overcast"],
+  45: ["மூடுபனி", "Fog"], 48: ["மூடுபனி", "Fog"], 51: ["தூறல்", "Drizzle"],
+  53: ["தூறல்", "Drizzle"], 55: ["தூறல்", "Drizzle"], 61: ["மழை", "Rain"],
+  63: ["மழை", "Rain"], 65: ["கனமழை", "Heavy rain"], 80: ["மழை", "Rain showers"],
+  81: ["மழை", "Rain showers"], 82: ["கனமழை", "Heavy showers"],
+};
+
+function weatherTime(value?: string) {
+  const match = value?.match(/^\d{4}-\d{2}-\d{2}T([01]\d|2[0-3]):([0-5]\d)/);
+  return match ? `${match[1]}:${match[2]}` : null;
+}
+
+export function DailyContext() {
+  const { language, timeFormat } = usePreferences();
+  const [now, setNow] = useState(new Date());
+  const [weather, setWeather] = useState<Weather | null>(null);
+  const [weatherStale, setWeatherStale] = useState(false);
+  const ta = language === "ta";
+
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    const timer = setInterval(tick, 30_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    let live = true;
+    const refresh = async () => {
+      try {
+        const response = await fetch("/api/weather", { cache: "no-store" });
+        if (!response.ok) throw new Error("Weather unavailable");
+        const data: Weather = await response.json();
+        if (live && !data.error) {
+          setWeather(data);
+          setWeatherStale(false);
+          localStorage.setItem("saffready-weather", JSON.stringify(data));
+        }
+      } catch {
+        if (!live) return;
+        setWeatherStale(true);
+        try {
+          const cached = JSON.parse(localStorage.getItem("saffready-weather") || "null") as Weather | null;
+          if (cached) setWeather(cached);
+        } catch { /* Weather is optional. */ }
+      }
+    };
+    void refresh();
+    const interval = setInterval(refresh, 600_000);
+    const visible = () => { if (document.visibilityState === "visible") void refresh(); };
+    document.addEventListener("visibilitychange", visible);
+    window.addEventListener("online", refresh);
+    return () => {
+      live = false;
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", visible);
+      window.removeEventListener("online", refresh);
+    };
+  }, []);
+
+  const date = new Intl.DateTimeFormat(ta ? "ta-IN" : "en-IN", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata",
+  }).format(now);
+  const clock = new Intl.DateTimeFormat(ta ? "ta-IN" : "en-IN", {
+    hour: "numeric", minute: "2-digit", hour12: timeFormat === "12h", timeZone: "Asia/Kolkata",
+  }).format(now);
+  const sunrise = weatherTime(weather?.daily?.sunrise?.[0]);
+  const sunset = weatherTime(weather?.daily?.sunset?.[0]);
+  const code = weather?.current?.weather_code;
+  const condition = code === undefined ? null : (labels[code]?.[ta ? 0 : 1] || (ta ? "வானிலை" : "Weather"));
+
+  return <section aria-label={date} className="my-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
+    <span className="font-medium text-[var(--text)]">{date} · {clock}</span>
+    {sunrise && <span>{copy("sunrise", language)} <b className="text-[var(--text)]">{formatTime(sunrise, timeFormat)}</b></span>}
+    {sunset && <span>{copy("sunset", language)} <b className="text-[var(--text)]">{formatTime(sunset, timeFormat)}</b></span>}
+    {!weatherStale && weather?.current && <span><b className="text-[var(--text)]">{Math.round(weather.current.temperature_2m)}°C</b>{condition && ` · ${condition}`}</span>}
+  </section>;
+}

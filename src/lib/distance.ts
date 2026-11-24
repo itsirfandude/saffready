@@ -11,11 +11,19 @@ export function haversineDistanceKm(from: UserLocation, to: UserLocation): numbe
   return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-export function sortByDistance<T extends { masjid: Masjid }>(items: T[], location: UserLocation): (T & { distanceKm: number })[] {
-  return items
-    .filter((item) => item.masjid.lat !== null && item.masjid.lng !== null)
-    .map((item) => ({ ...item, distanceKm: haversineDistanceKm(location, { latitude: item.masjid.lat!, longitude: item.masjid.lng! }) }))
-    .sort((a, b) => a.distanceKm - b.distanceKm);
+export function sortByDistance<T extends { masjid: Masjid }>(items: T[], location: UserLocation): (T & { distanceKm?: number })[] {
+  const located: (T & { distanceKm: number })[] = [];
+  const withoutCoordinates: (T & { distanceKm?: number })[] = [];
+  for (const item of items) {
+    const { lat, lng } = item.masjid;
+    if (lat === null || lng === null || !Number.isFinite(lat) || !Number.isFinite(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      withoutCoordinates.push({ ...item });
+      continue;
+    }
+    located.push({ ...item, distanceKm: haversineDistanceKm(location, { latitude: lat, longitude: lng }) });
+  }
+  located.sort((a, b) => a.distanceKm - b.distanceKm);
+  return [...located, ...withoutCoordinates];
 }
 
 export function formatDistance(distanceKm: number): string {
