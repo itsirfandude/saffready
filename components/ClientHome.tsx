@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { DailyContext } from "@/components/DailyContext";
 import { MasjidList } from "@/components/MasjidList";
 import { NextIqamahHero } from "@/components/NextIqamahHero";
+import { TimetableDataNotice } from "@/components/TimetableDataNotice";
 import { usePreferences } from "@/components/PreferencesProvider";
 import { getAllNextIqamah, type NextIqamah } from "@/src/lib/next-iqamah";
 import { getDailyIqamahs } from "@/src/lib/scheduling";
@@ -48,7 +49,7 @@ function rememberSessionLocation(location: UserLocation): SessionLocation {
 }
 
 export function ClientHome() {
-  const { timeFormat, language, masjids, dataStale, dataSource } = usePreferences();
+  const { timeFormat, language, masjids } = usePreferences();
   const ta = language === "ta";
   const [now, setNow] = useState(new Date());
   const [sortMode, setSortMode] = useState<SortMode>("next");
@@ -102,7 +103,6 @@ export function ClientHome() {
   const freshnessText = observationDate !== null && ageDays !== null
     ? copy("oldestObservation", language).replace("{date}", observationDate).replace("{n}", String(ageDays))
     : copy("observationUnavailable", language);
-
   const available = nextItems.filter((item): item is NextIqamah => !("unavailable" in item));
   const reachable = currentLocation ? available.find((item) => {
     const travel = travelForMasjid(currentLocation, item.masjid);
@@ -150,16 +150,15 @@ export function ClientHome() {
 
   return <main className="mx-auto min-h-screen max-w-[1320px] px-4 pb-8 sm:px-7 lg:px-10">
     <AppHeader />
-    {next && <div className="mx-auto w-full max-w-2xl"><NextIqamahHero next={next} timeFormat={timeFormat} travel={heroTravel} mayMiss={heroMayMiss} showLocationHint={!currentLocation} /></div>}
+    {next && <div className="mx-auto w-full max-w-2xl"><NextIqamahHero next={next} timeFormat={timeFormat} travel={heroTravel} mayMiss={heroMayMiss} /></div>}
     <DailyContext />
-    <section aria-live="polite" className={`mt-2 rounded-lg border px-3 py-2 text-xs leading-5 ${freshness.stale ? "border-[var(--accent-2)] bg-[color-mix(in_srgb,var(--accent-2)_14%,var(--bg-card))]" : "border-[var(--border)] bg-[var(--bg-card)]"}`}>
+    <section aria-live="polite" className={`mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border px-3 py-1.5 text-xs leading-5 ${freshness.stale ? "border-[var(--accent-2)] bg-[color-mix(in_srgb,var(--accent-2)_14%,var(--bg-card))]" : "border-[var(--border)] bg-[var(--bg-card)]"}`}>
       <p className={`font-medium ${freshness.stale ? "stale-label" : "text-[var(--text)]"}`}>{freshnessText}</p>
+      {freshness.stale && <span className="stale-label font-semibold">{copy("stale", language)}</span>}
       {freshness.missingOrInvalid > 0 && <p className="text-[var(--text-muted)]">{copy("observationsIncomplete", language).replace("{n}", String(freshness.missingOrInvalid))}</p>}
-      {dataStale && <p className="stale-label">{ta
-        ? (dataSource === "bundled" ? "Service கிடைக்கவில்லை — app data காட்டப்படுகிறது" : "Service கிடைக்கவில்லை — சமீபத்திய data காட்டப்படுகிறது")
-        : (dataSource === "bundled" ? "Timetable source unavailable — showing bundled data" : "Timetable source unavailable — showing last successful data")}</p>}
+      <TimetableDataNotice className="basis-full" />
     </section>
-    <div className="mt-3">
+    <div className="mt-2">
       <MasjidList items={directory} timeFormat={timeFormat} sortMode={effectiveSortMode} onNext={() => setSortMode("next")} onDistance={() => requestLocation(true)} onUseLocation={() => requestLocation(false)} location={currentLocation} locationState={locationState} now={now} />
     </div>
     <section className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--bg-card)]">

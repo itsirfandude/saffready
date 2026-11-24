@@ -38,13 +38,14 @@ export function MasjidList({
       </div>
       <span className="text-xs text-[var(--text-muted)]">{items.length}</span>
     </div>
-    <div className="mb-2 flex min-h-11 flex-wrap items-center gap-x-3 gap-y-2 text-xs">
+    <div className="mb-2 flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 text-xs">
       <button type="button" aria-pressed={sortMode === "next"} onClick={onNext} className={`min-h-11 px-1 ${sortMode === "next" ? "font-semibold text-[var(--accent)]" : "text-[var(--text-muted)]"}`}>{ta ? "Next Iqamah" : "Next Iqamah"}</button>
       <button type="button" aria-pressed={sortMode === "distance"} onClick={onDistance} disabled={locationState === "loading"} className={`min-h-11 px-1 disabled:opacity-60 ${sortMode === "distance" ? "font-semibold text-[var(--accent)]" : "text-[var(--text-muted)]"}`}>Distance</button>
       <button type="button" onClick={onUseLocation} disabled={locationState === "loading"} className="min-h-11 rounded-lg border border-[var(--accent-2)] px-3 font-semibold text-[var(--text)] disabled:opacity-60">{copy("useLocation", language)}</button>
+      {!location && <span className="basis-full text-[11px] leading-4 text-[var(--text-muted)]">{copy("locationHint", language)}</span>}
       {status && <span role="status" aria-live="polite" className="text-[var(--text-muted)]">{status}</span>}
     </div>
-    <div className="grid grid-cols-1 gap-2 min-[640px]:grid-cols-2">
+    <div className="grid grid-cols-1 gap-2 min-[768px]:grid-cols-2">
       {items.map((item, index) => {
         const distanceKm = (item as NextIqamah & { distanceKm?: number }).distanceKm;
         const travel = location ? travelForMasjid(location, item.masjid) : null;

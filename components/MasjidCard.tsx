@@ -46,23 +46,28 @@ export function MasjidCard({
   return <Link
     href={`/masjid/${item.masjid.id}`}
     aria-label={accessible}
-    className={`ink-card flex min-h-[72px] items-center gap-3 rounded-xl px-3 py-2 transition-transform hover:-translate-y-0.5 ${mayMiss ? "bg-[color-mix(in_srgb,var(--bg-card)_72%,var(--bg)_28%)]" : ""}`}
+    className={`ink-card flex min-h-[126px] items-start gap-3 rounded-xl px-3 py-3 transition-transform hover:-translate-y-0.5 ${mayMiss ? "bg-[color-mix(in_srgb,var(--bg-card)_72%,var(--bg)_28%)]" : ""}`}
   >
     <RosetteBadge rank={rank} />
     <div className="min-w-0 flex-1">
-      <p className={`whitespace-normal break-words font-semibold leading-snug ${ta ? "font-tamil-text text-base" : "text-sm"}`}>{name}</p>
-      <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
-        <p className={`min-w-0 whitespace-normal break-words ${ta ? "font-tamil-text text-sm" : "text-sm"}`}>{prayerName}</p>
-        <div className="ml-auto max-w-full text-right">
-          <p className="whitespace-nowrap text-base font-semibold text-[var(--accent)]">{iqamahTime}</p>
-          <p className="text-[11px] leading-4 text-[var(--text-muted)]">
-            {duration}{item.tomorrow && <span> · {copy("tomorrow", language)}</span>}
-            {distanceKm !== undefined && <span> · {formatDistance(distanceKm)}</span>}
-            {travel && <span> · {travelText}</span>}
-          </p>
-          {mayMiss && <span className="text-[11px] font-semibold stale-label">{copy("mayMiss", language)}</span>}
+      <div className="flex min-w-0 flex-wrap items-start justify-between gap-x-3 gap-y-1">
+        <p className={`min-w-0 flex-1 whitespace-normal break-words font-semibold leading-snug ${ta ? "font-tamil-text text-base" : "text-sm"}`}>{name}</p>
+        <p className={`shrink-0 whitespace-normal ${ta ? "font-tamil-text text-sm" : "text-sm"}`}>{prayerName}</p>
+      </div>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-[var(--border)] pt-2">
+        <div>
+          <p className="whitespace-nowrap text-xl font-semibold leading-6 text-[var(--accent)]">{iqamahTime}</p>
+          {distanceKm !== undefined && <p className="text-[11px] text-[var(--text-muted)]">{formatDistance(distanceKm)}</p>}
+        </div>
+        <div className="text-right">
+          <p className="text-sm font-semibold leading-5">{duration}{item.tomorrow && <span> · {copy("tomorrow", language)}</span>}</p>
+          <p className="text-[11px] leading-4 text-[var(--text-muted)]">{copy("untilIqamah", language)}</p>
         </div>
       </div>
+      {(travel || mayMiss) && <div className="mt-1 flex min-h-5 flex-wrap items-center justify-between gap-x-3 text-xs">
+        {travel ? <span className="text-[var(--text-muted)]"><span aria-hidden="true">{travel.mode === "bike" ? "🚲" : "♙"}</span> {travelText}</span> : <span />}
+        {mayMiss && <span className="font-semibold stale-label">{copy("mayMiss", language)}</span>}
+      </div>}
     </div>
   </Link>;
 }

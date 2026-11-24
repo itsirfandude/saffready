@@ -8,6 +8,9 @@ const REQUIRED = {
   Settings: ['key','value']
 };
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+const VERIFIED_MASJID_FIELDS = ['name_en','name_ta'];
+const VERIFIED_TIMING_FIELDS = [...PRAYERS.flatMap(p=>[p+'_adhan',p+'_iqamah',p+'_iqamah_type',p+'_iqamah_offset_min']),'timing_pattern','effective_from','handwritten_prayers','unclear_prayers'];
+const PUBLISHED_MASJID_FIELDS = ['name_en','name_ta','maps_name','affiliation','address','latitude','longitude','maps_url','active','observed_on','source','notes','ishraq','sunrise','solar_noon','sunset'];
 function initializeSchema() {
   const ss=SpreadsheetApp.getActive();
   PropertiesService.getScriptProperties().setProperty('SPREADSHEET_ID',ss.getId());
@@ -37,7 +40,7 @@ function initializeSchema() {
   const history=ss.getSheetByName(TABS.history); history.protect().setDescription('Append-only SaffReady timing history');
   settings.protect().setDescription('SaffReady schema and publication metadata');
   timings.getRange('AB:AC').protect().setDescription('Updated timestamp and editor are maintained by the on-edit script');
-  return 'Schema initialized. Add the 13 masjid rows and matching timing rows before deploying.';
+  return 'Schema initialized. Add each active masjid and its matching timing row before deploying.';
 }
 function doGet() {
   const props = PropertiesService.getScriptProperties();
@@ -54,9 +57,53 @@ function doGet() {
 }
 function installTimingTrigger() {
   const ss=SpreadsheetApp.getActive();
+  // Apps Script returns only triggers owned by the current account. This cleanup
+  // intentionally leaves triggers created by every other account untouched.
   ScriptApp.getProjectTriggers().filter(t=>t.getHandlerFunction()==='recordTimingHistory').forEach(t=>ScriptApp.deleteTrigger(t));
   ScriptApp.newTrigger('recordTimingHistory').forSpreadsheet(ss).onEdit().create();
   return 'Owner-authorized on-edit trigger installed.';
+}
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('SaffReady Admin')
+    .addItem('Verify unchanged timetable…', 'promptUnchangedVerification_')
+    .addToUi();
+}
+function promptUnchangedVerification_() {
+  requireVerificationAdmin_();
+  const ui=SpreadsheetApp.getUi();
+  const answer=ui.prompt('Verify unchanged timetable', 'Enter the exact masjid id after physically checking its noticeboard:', ui.ButtonSet.OK_CANCEL);
+  if(answer.getSelectedButton()!==ui.Button.OK)return;
+  verifyMasjidUnchanged(answer.getResponseText().trim());
+  ui.alert('Verification recorded.');
+}
+function requireVerificationAdmin_() {
+  const configured=PropertiesService.getScriptProperties().getProperty('VERIFICATION_ADMIN_EMAIL');
+  const active=(Session.getActiveUser().getEmail()||'').trim().toLowerCase();
+  if(!configured || !active || active!==configured.trim().toLowerCase()) throw new Error('Verification is restricted to the configured timetable administrator.');
+}
+// Private spreadsheet action. Deliberately absent from doGet and all web routes.
+function verifyMasjidUnchanged(masjidId) {
+  requireVerificationAdmin_();
+  const id=String(masjidId||'').trim();
+  if(!id)throw new Error('A masjid id is required.');
+  const lock=LockService.getDocumentLock();
+  if(!lock.tryLock(10000))throw new Error('Could not acquire verification lock. Retry the action.');
+  try {
+    const ss=SpreadsheetApp.openById(PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID'));
+    const masjids=ss.getSheetByName(TABS.masjids), values=masjids.getDataRange().getDisplayValues();
+    const matches=[];
+    values.forEach((r,index)=>{if(index>0 && r[0]===id)matches.push(index);});
+    if(matches.length!==1)throw new Error(matches.length===0?'Unknown masjid id: '+id:'Duplicate masjid id: '+id);
+    const row=matches[0];
+    const history=ss.getSheetByName(TABS.history);
+    if(!history)throw new Error('Missing private Timing History sheet.');
+    const today=Utilities.formatDate(new Date(),'Asia/Kolkata','yyyy-MM-dd');
+    const observed=masjids.getRange(row+1,11);
+    observed.setNumberFormat('@'); observed.setValue(today);
+    // Existing Timing History schema is retained; private result uses new_value.
+    history.appendRow([id,'','verification',values[row][10]||'', 'unchanged',today,Session.getActiveUser().getEmail(),'Physical noticeboard check']);
+    return today;
+  } finally { lock.releaseLock(); }
 }
 function buildDataset_() {
   const id=PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
@@ -70,18 +117,18 @@ function buildDataset_() {
   const activeRows=mRows.filter(r=>String(r.active).toLowerCase()!=='false');
   const allIds=new Set(mRows.map(r=>String(r.id)));
   if(allIds.size!==mRows.length)throw new Error('Duplicate masjid id in Masjids.');
-  if(activeRows.length!==13)throw new Error('SaffReady currently expects exactly 13 active masjids.');
+  if(!activeRows.length)throw new Error('At least one active masjid is required.');
   const timings = new Map(tRows.map(r => [String(r.masjid_id), r]));
   if (timings.size !== tRows.length) throw new Error('Duplicate masjid_id in Prayer Timings.');
   if(tRows.some(r=>!allIds.has(String(r.masjid_id))))throw new Error('Orphan Prayer Timings row; every timing row must match a masjid.');
   const masjids = activeRows.map(m => {
     if(!m.id||!m.name_en)throw new Error('Masjid id and English name are required. Leave an unverified Tamil name blank.');
-    if(m.observed_on&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(m.observed_on))throw new Error('observed_on must be YYYY-MM-DD for '+m.id);
+    if(m.observed_on&&!/^\d{4}-\d{2}-\d{2}$/.test(m.observed_on))throw new Error('observed_on must be YYYY-MM-DD for '+m.id);
     const t = timings.get(String(m.id));
     if (!t) throw new Error('Missing Prayer Timings row for ' + m.id);
     const pattern = t.timing_pattern || 'unknown';
     if (!['fixed','seasonal','variable','unknown'].includes(pattern)) throw new Error('Invalid timing_pattern for ' + m.id);
-    if(t.effective_from&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(t.effective_from))throw new Error('effective_from must be YYYY-MM-DD for '+m.id);
+    if(t.effective_from&&!/^\d{4}-\d{2}-\d{2}$/.test(t.effective_from))throw new Error('effective_from must be YYYY-MM-DD for '+m.id);
     const handwritten=new Set(String(t.handwritten_prayers||'').split(',').map(x=>x.trim()).filter(Boolean));
     const unclear=new Set(String(t.unclear_prayers||'').split(',').map(x=>x.trim()).filter(Boolean));
     const prayers = PRAYERS.map(p => {
@@ -101,22 +148,64 @@ function buildDataset_() {
   return { version:setting.data_version || '1', publishedAt:setting.last_published_at || new Date().toISOString(), timezone:setting.timezone || 'Asia/Kolkata', masjids };
 }
 function requiredTime_(value, label) { const v=String(value || '').trim(); if (!TIME.test(v)) throw new Error('Missing or malformed HH:mm value: ' + label); return v; }
-function rows_(sheet) { if (!sheet) throw new Error('Missing sheet tab.'); const values=sheet.getDataRange().getDisplayValues(); if (!values.length) throw new Error('Missing header row in ' + sheet.getName()); const expected=REQUIRED[sheet.getName()]; if (expected.some((x,i)=>values[0][i]!==x)) throw new Error('Unexpected columns in ' + sheet.getName()); return values.slice(1).filter(r=>r.some(v=>v!=='')).map(row=>Object.fromEntries(expected.map((key,i)=>[key,row[i] || '']))); }
+function rows_(sheet) { if (!sheet) throw new Error('Missing sheet tab.'); const values=sheet.getDataRange().getDisplayValues(); if (!values.length) throw new Error('Missing header row in ' + sheet.getName()); const expected=REQUIRED[sheet.getName()]; if (!expected || values[0].length>expected.length || values[0].some((x,i)=>x!==expected[i])) throw new Error('Unexpected columns in ' + sheet.getName()); return values.slice(1).filter(r=>r.some(v=>v!=='')).map(row=>Object.fromEntries(expected.map((key,i)=>[key,row[i] || '']))); }
 function json_(value) { return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON); }
 
-// Installable onEdit trigger: snapshots changed timetable cells to the append-only history tab.
+// Installable onEdit trigger: preserves private history, updates one verified Masjid, and publishes feed edits.
 function recordTimingHistory(e) {
-  const sheet=e.range.getSheet(); if(![TABS.timings,TABS.masjids].includes(sheet.getName()) || e.range.getRow()<2) return;
-  const ss=sheet.getParent(), history=ss.getSheetByName(TABS.history), headers=REQUIRED[sheet.getName()];
-  const row=sheet.getRange(e.range.getRow(),1,1,headers.length).getDisplayValues()[0];
-  const field=headers[e.range.getColumn()-1]; if(!field)return;
-  if(sheet.getName()===TABS.timings && /(adhan|iqamah|effective_from|timing_pattern)/.test(field)){
-    const id=row[0], prayer=field.startsWith('maghrib_')?'maghrib':field.split('_')[0];
-    history.appendRow([id,prayer,field,e.oldValue || '',e.value || '',new Date(),Session.getActiveUser().getEmail() || '', 'Mobile sheet edit']);
-    sheet.getRange(e.range.getRow(),28).setValue(new Date().toISOString());
-    sheet.getRange(e.range.getRow(),29).setValue(Session.getActiveUser().getEmail() || 'Sheet editor');
-  }
-  const settings=rows_(ss.getSheetByName(TABS.settings)); const version=settings.find(r=>r.key==='data_version');
-  if(version){const sheetSettings=ss.getSheetByName(TABS.settings); const values=sheetSettings.getDataRange().getDisplayValues(); const index=values.findIndex(r=>r[0]==='data_version'); sheetSettings.getRange(index+1,2).setValue(Number(version.value || 0)+1);}
-  const settingSheet=ss.getSheetByName(TABS.settings), settingRows=settingSheet.getDataRange().getDisplayValues(), publishedIndex=settingRows.findIndex(r=>r[0]==='last_published_at'); if(publishedIndex>=0)settingSheet.getRange(publishedIndex+1,2).setValue(new Date().toISOString());
+  if (!e || !e.range) return;
+  const sheet=e.range.getSheet(), tab=sheet.getName();
+  if (![TABS.timings,TABS.masjids].includes(tab) || e.range.getRow()<2) return;
+  const headers=REQUIRED[tab], firstCol=e.range.getColumn(), lastCol=firstCol+e.range.getNumColumns()-1;
+  const touched=headers.slice(firstCol-1,lastCol);
+  const verifiedFields=tab===TABS.timings?VERIFIED_TIMING_FIELDS:VERIFIED_MASJID_FIELDS;
+  const touchesVerifiedField=touched.some(field=>verifiedFields.includes(field));
+  const masjidFields=tab===TABS.masjids?PUBLISHED_MASJID_FIELDS:[];
+  const timingFields=tab===TABS.timings?[...VERIFIED_TIMING_FIELDS,'updated_at']:[];
+  const isPublishedEdit=touched.some(field=>masjidFields.includes(field)||timingFields.includes(field));
+  if (!isPublishedEdit) return;
+
+  const rowCount=e.range.getNumRows(), columnCount=e.range.getNumColumns();
+  const singleCell=rowCount===1 && columnCount===1;
+  // Apps Script supplies oldValue/value only for single-cell edits. There is no
+  // before-edit snapshot in this project, so a multi-cell edit cannot prove a delta.
+  const oldValue=String(e.oldValue===undefined ? '' : e.oldValue);
+  const newValue=String(e.value===undefined ? '' : e.value);
+  const verifiedChange=singleCell && touchesVerifiedField && oldValue!==newValue;
+  if(singleCell && touchesVerifiedField && !verifiedChange) return;
+
+  const lock=LockService.getDocumentLock();
+  if (!lock.tryLock(10000)) throw new Error('Could not acquire edit lock. Retry the edit.');
+  try {
+    const ss=sheet.getParent(), now=new Date(), editor=Session.getActiveUser().getEmail() || 'Sheet editor';
+    const firstRow=e.range.getRow();
+    for(let offset=0;offset<rowCount;offset++) {
+      const rowIndex=firstRow+offset;
+      const id=sheet.getRange(rowIndex,1).getDisplayValue(); if(!id)continue;
+      if(tab===TABS.timings && verifiedChange) {
+        const history=ss.getSheetByName(TABS.history);
+        const field=headers[firstCol-1];
+        const prayer=PRAYERS.find(p=>field.startsWith(p+'_')) || '';
+        history.appendRow([id,prayer,field,oldValue,newValue,now,editor,'Mobile sheet edit']);
+        // Column indices 28 and 29 are the publisher's updated_at/updated_by metadata.
+        sheet.getRange(rowIndex,28).setValue(now.toISOString());
+        sheet.getRange(rowIndex,29).setValue(editor);
+      }
+      if(verifiedChange) {
+        const masjids=ss.getSheetByName(TABS.masjids), values=masjids.getDataRange().getDisplayValues();
+        const match=values.findIndex((valuesRow,index)=>index>0 && valuesRow[0]===id);
+        if(match>0) {
+          const observedCell=masjids.getRange(match+1,11);
+          observedCell.setNumberFormat('@');
+          observedCell.setValue(Utilities.formatDate(now,'Asia/Kolkata','yyyy-MM-dd'));
+        }
+        // Keep a private audit event separate from the per-cell correction history.
+        ss.getSheetByName(TABS.history).appendRow([id,'','verification','', 'changed',Utilities.formatDate(now,'Asia/Kolkata','yyyy-MM-dd'),editor,'Timetable correction verified']);
+      }
+    }
+    const settings=ss.getSheetByName(TABS.settings), values=settings.getDataRange().getDisplayValues();
+    const versionIndex=values.findIndex(r=>r[0]==='data_version'), publishedIndex=values.findIndex(r=>r[0]==='last_published_at');
+    if(versionIndex>=0)settings.getRange(versionIndex+1,2).setValue(Number(values[versionIndex][1] || 0)+1);
+    if(publishedIndex>=0)settings.getRange(publishedIndex+1,2).setValue(now.toISOString());
+  } finally { lock.releaseLock(); }
 }

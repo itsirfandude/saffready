@@ -17,16 +17,17 @@ function istDate(now: Date): string {
 export function getObservationFreshness(masjids: Masjid[], now = new Date()) {
   const dates: string[] = [];
   let missingOrInvalid = 0;
+  const todayDate = istDate(now);
+  const today = new Date(`${todayDate}T00:00:00Z`).getTime();
   for (const masjid of masjids) {
     const observations = masjid.prayers.length
       ? masjid.prayers.map((prayer) => prayer.observedOn ?? masjid.observedOn ?? null)
       : [masjid.observedOn ?? null];
-    const valid = observations.filter(isValidDate);
+    const valid = observations.filter((date): date is string => isValidDate(date) && date <= todayDate);
     dates.push(...valid);
-    if (valid.length === 0 || observations.some((date) => !isValidDate(date))) missingOrInvalid++;
+    if (valid.length === 0 || observations.some((date) => !isValidDate(date) || date > todayDate)) missingOrInvalid++;
   }
   const oldest = dates.sort()[0] ?? null;
-  const today = new Date(`${istDate(now)}T00:00:00Z`).getTime();
   const ageDays = oldest ? Math.max(0, Math.floor((today - new Date(`${oldest}T00:00:00Z`).getTime()) / 86400000)) : null;
   return { oldest, ageDays, stale: ageDays !== null && ageDays > 14, missingOrInvalid };
 }

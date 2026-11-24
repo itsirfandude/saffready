@@ -83,10 +83,12 @@ export function DailyContext() {
   const code = weather?.current?.weather_code;
   const condition = code === undefined ? null : (labels[code]?.[ta ? 0 : 1] || (ta ? "வானிலை" : "Weather"));
 
-  return <section aria-label={date} className="my-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--text-muted)]">
+  return <section aria-label={date} className="my-1.5 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-3 py-2 text-xs text-[var(--text-muted)]">
     <span className="font-medium text-[var(--text)]">{date} · {clock}</span>
-    {sunrise && <span>{copy("sunrise", language)} <b className="text-[var(--text)]">{formatTime(sunrise, timeFormat)}</b></span>}
-    {sunset && <span>{copy("sunset", language)} <b className="text-[var(--text)]">{formatTime(sunset, timeFormat)}</b></span>}
-    {!weatherStale && weather?.current && <span><b className="text-[var(--text)]">{Math.round(weather.current.temperature_2m)}°C</b>{condition && ` · ${condition}`}</span>}
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+      {sunrise && <span>{copy("sunrise", language)} <b className="text-[var(--text)]">{formatTime(sunrise, timeFormat)}</b></span>}
+      {sunset && <span>{copy("sunset", language)} <b className="text-[var(--text)]">{formatTime(sunset, timeFormat)}</b></span>}
+      {!weatherStale && weather?.current && <span><b className="text-[var(--text)]">{Math.round(weather.current.temperature_2m)}°C</b>{condition && ` · ${condition}`}</span>}
+    </div>
   </section>;
 }

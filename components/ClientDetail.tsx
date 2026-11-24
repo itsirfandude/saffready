@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AppHeader } from "@/components/AppHeader";
 import { FreshnessLabel } from "@/components/FreshnessLabel";
+import { TimetableDataNotice } from "@/components/TimetableDataNotice";
 import { PrayerTimetable } from "@/components/PrayerTimetable";
 import { usePreferences } from "@/components/PreferencesProvider";
-import { formatTime } from "@/src/lib/format-time";
 import { getNextIqamah } from "@/src/lib/next-iqamah";
 import type { Masjid } from "@/src/types/masjid";
 import { masjidName } from "@/src/lib/masjid-name";
@@ -36,6 +36,7 @@ export function ClientDetail({ masjid: initialMasjid }: { masjid: Masjid }) {
   return <main className="mx-auto min-h-screen max-w-[1320px] px-4 pb-8 sm:px-7 lg:px-10">
     <AppHeader />
     <Link href="/" className="mb-3 inline-flex min-h-11 items-center text-sm text-[var(--accent)]">← Home</Link>
+    <TimetableDataNotice className="mb-3 text-xs" />
     <div className="grid gap-5 lg:grid-cols-[minmax(300px,.78fr)_minmax(0,1.22fr)] lg:items-start">
       <section className="ink-card min-w-0 rounded-2xl p-5 sm:p-6 lg:sticky lg:top-4">
         <h1 className={`whitespace-normal break-words font-semibold ${ta ? "font-tamil-text text-2xl" : "text-2xl"}`}>{masjidName(masjid, language)}</h1>
@@ -48,7 +49,6 @@ export function ClientDetail({ masjid: initialMasjid }: { masjid: Masjid }) {
       <section className="min-w-0">
         <h2 className="mb-2 text-lg font-semibold">Prayer timetable</h2>
         <PrayerTimetable masjid={masjid} timeFormat={timeFormat} nextPrayer={"unavailable" in next ? null : next.prayer} nextTomorrow={"unavailable" in next ? false : next.tomorrow} />
-        {masjid.additionalObservances && masjid.additionalObservances.length > 0 && <section className="mt-4 rounded-xl border px-4 py-3"><h3 className="text-sm font-semibold">Additional observances</h3><div className="mt-2 flex flex-wrap gap-x-6 gap-y-2 text-sm">{masjid.additionalObservances.map((item) => <span key={item.name_en}>{ta ? item.name_ta : item.name_en}: <b>{formatTime(item.time, timeFormat)}</b></span>)}</div></section>}
         {otherNotes.length > 0 && <p className="mt-4 text-xs leading-6 text-[var(--text-muted)]">{otherNotes.join(" · ")}</p>}
       </section>
     </div>

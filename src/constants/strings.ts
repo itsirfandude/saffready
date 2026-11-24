@@ -14,6 +14,28 @@ export const STRINGS = {
     en: "Oldest board observation unavailable (observation dates incomplete).",
     ta: "பழமையான பலகைப் பதிவு கிடைக்கவில்லை (பதிவு தேதிகள் முழுமையில்லை).",
   },
+  stale: { en: "Stale · over 14 days", ta: "பழைய பதிவு · 14 நாட்களுக்கு மேல்" },
+  timetableSourceStale: {
+    en: "Showing a stale timetable snapshot · last published {date}",
+    ta: "பழைய timetable snapshot காட்டப்படுகிறது · கடைசி வெளியீடு {date}",
+  },
+  timetableBundled: {
+    en: "Showing bundled fallback timetable",
+    ta: "சேமிக்கப்பட்ட fallback timetable காட்டப்படுகிறது",
+  },
+  timetableCached: {
+    en: "Showing cached timetable · last published {date}",
+    ta: "Cached timetable காட்டப்படுகிறது · கடைசி வெளியீடு {date}",
+  },
+  timetableCacheExpired: {
+    en: "Saved timetable cache expired · showing bundled data",
+    ta: "சேமித்த timetable cache காலாவதியானது · bundled data காட்டப்படுகிறது",
+  },
+  timetableUnavailable: {
+    en: "Live timetable unavailable · showing bundled data",
+    ta: "Live timetable கிடைக்கவில்லை · bundled data காட்டப்படுகிறது",
+  },
+  untilIqamah: { en: "Until Iqamah", ta: "இகாமத்துக்கு இன்னும்" },
   observationDatesIncomplete: { en: "Observation date unavailable", ta: "பதிவு தேதி கிடைக்கவில்லை" },
   walk: { en: "~{n} min walk", ta: "நடை ~{n} நிமி" },
   bike: { en: "~{n} min by bike", ta: "பைக் ~{n} நிமி" },
@@ -38,6 +60,9 @@ export const STRINGS = {
   aboutBike: { en: "about {n} minutes by bike", ta: "சுமார் {n} நிமிடம் பைக்கில்" },
   observedOn: { en: "Observed", ta: "பார்த்த தேதி" },
   noticeboardSource: { en: "Noticeboard source", ta: "Noticeboard source" },
+  verificationRecent: { en: "Recently verified", ta: "சமீபத்தில் சரிபார்க்கப்பட்டது" },
+  verificationDue: { en: "Verification due", ta: "சரிபார்ப்பு தேவை" },
+  verificationUnavailable: { en: "Verification unavailable", ta: "சரிபார்ப்பு தேதி கிடைக்கவில்லை" },
   weatherAttribution: { en: "Weather data: Open-Meteo", ta: "Weather data: Open-Meteo" },
 } as const;
 

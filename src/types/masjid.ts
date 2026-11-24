@@ -8,7 +8,7 @@ export interface PrayerRecord {
   iqamah: IqamahValue;
   observedOn: string | null;
   effectiveFrom: string | null;
-  source: "noticeboard_photo";
+  source: "noticeboard_photo" | "digital_timetable_photo";
   handwritten: boolean;
   unclear: boolean;
   timingPattern?: TimingPattern;
