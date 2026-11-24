@@ -1,15 +1,6 @@
 import type { Masjid } from "@/src/types/masjid";
-
-export interface UserLocation { latitude: number; longitude: number }
-
-export function haversineDistanceKm(from: UserLocation, to: UserLocation): number {
-  const earthRadiusKm = 6371;
-  const toRadians = (degrees: number) => degrees * Math.PI / 180;
-  const dLat = toRadians(to.latitude - from.latitude);
-  const dLng = toRadians(to.longitude - from.longitude);
-  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRadians(from.latitude)) * Math.cos(toRadians(to.latitude)) * Math.sin(dLng / 2) ** 2;
-  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
+import { haversineDistanceKm, type UserLocation } from "@/src/lib/travel";
+export { haversineDistanceKm, type UserLocation } from "@/src/lib/travel";
 
 export function sortByDistance<T extends { masjid: Masjid }>(items: T[], location: UserLocation): (T & { distanceKm?: number })[] {
   const located: (T & { distanceKm: number })[] = [];

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { masjids } from "@/src/lib/data";
-import { haversineDistanceKm } from "@/src/lib/distance";
-import { estimateTravel, isReachable, travelForMasjid } from "@/src/lib/travel";
+import { estimateTravel, haversineDistanceKm, isReachable, travelForMasjid } from "@/src/lib/travel";
 
 describe("travel estimates", () => {
   it("uses Haversine straight-line distance and applies the 1.3 detour", () => {

@@ -1,11 +1,21 @@
 import type { Masjid } from "@/src/types/masjid";
-import { haversineDistanceKm, type UserLocation } from "@/src/lib/distance";
+
+export interface UserLocation { latitude: number; longitude: number }
 
 export const STREET_DETOUR_FACTOR = 1.3;
 export const WALKING_SPEED_KMH = 5;
 export const BICYCLE_SPEED_KMH = 15;
 export const WALKING_BIKE_THRESHOLD_MINUTES = 20;
 export const REACHABILITY_BUFFER_MINUTES = 1;
+
+export function haversineDistanceKm(from: UserLocation, to: UserLocation): number {
+  const earthRadiusKm = 6371;
+  const toRadians = (degrees: number) => degrees * Math.PI / 180;
+  const dLat = toRadians(to.latitude - from.latitude);
+  const dLng = toRadians(to.longitude - from.longitude);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRadians(from.latitude)) * Math.cos(toRadians(to.latitude)) * Math.sin(dLng / 2) ** 2;
+  return earthRadiusKm * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
 export interface TravelEstimate {
   distanceKm: number;
