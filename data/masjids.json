@@ -1,6 +1,6 @@
 {
-  "version": "34",
-  "publishedAt": "2026-11-25T08:09:07.009Z",
+  "version": "81",
+  "publishedAt": "2026-11-25T14:40:08.741Z",
   "timezone": "Asia/Kolkata",
   "masjids": [
     {
@@ -1227,6 +1227,87 @@
           "observedOn": "2026-11-24",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
+          "handwritten": false,
+          "unclear": false
+        }
+      ],
+      "additionalObservances": []
+    },
+    {
+      "id": "gm-nagar-muslim-masjid",
+      "name_en": "GM Nagar Muslim Masjid",
+      "name_ta": "ஜி.எம். நகர் முஸ்லிம் மஸ்ஜித்",
+      "mapsName": null,
+      "affiliation": "SUNNAT JAMAAT",
+      "address_ta": null,
+      "lat": 10.98801,
+      "lng": 76.970163,
+      "mapsUrl": "https://maps.app.goo.gl/125jiwRLLBQsvzFG7",
+      "active": true,
+      "observedOn": "2026-11-25",
+      "source": "digital_timetable_photo",
+      "notes": null,
+      "timingPattern": "fixed",
+      "updatedAt": "2026-11-25T14:40:08.741Z",
+      "prayers": [
+        {
+          "prayer": "fajr",
+          "adhan": "05:05",
+          "iqamah": "05:30",
+          "observedOn": "2026-11-25",
+          "effectiveFrom": null,
+          "source": "digital_timetable_photo",
+          "handwritten": false,
+          "unclear": false
+        },
+        {
+          "prayer": "dhuhr",
+          "adhan": "12:45",
+          "iqamah": "13:05",
+          "observedOn": "2026-11-25",
+          "effectiveFrom": null,
+          "source": "digital_timetable_photo",
+          "handwritten": false,
+          "unclear": false
+        },
+        {
+          "prayer": "asr",
+          "adhan": "16:00",
+          "iqamah": "16:20",
+          "observedOn": "2026-11-25",
+          "effectiveFrom": null,
+          "source": "digital_timetable_photo",
+          "handwritten": false,
+          "unclear": false
+        },
+        {
+          "prayer": "maghrib",
+          "adhan": "18:03",
+          "iqamah": "18:06",
+          "observedOn": "2026-11-25",
+          "effectiveFrom": null,
+          "source": "digital_timetable_photo",
+          "handwritten": false,
+          "unclear": false
+        },
+        {
+          "prayer": "isha",
+          "adhan": "19:17",
+          "iqamah": "19:35",
+          "observedOn": "2026-11-25",
+          "effectiveFrom": null,
+          "source": "digital_timetable_photo",
+          "handwritten": false,
+          "unclear": false
+        },
+        {
+          "prayer": "jumuah",
+          "adhan": "12:40",
+          "iqamah": "13:30",
+          "timingPattern": "fixed",
+          "observedOn": "2026-11-25",
+          "effectiveFrom": null,
+          "source": "digital_timetable_photo",
           "handwritten": false,
           "unclear": false
         }
