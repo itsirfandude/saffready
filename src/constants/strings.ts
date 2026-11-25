@@ -5,19 +5,20 @@ export const STRINGS = {
     en: "Oldest board observation: {date} ({n} days ago)",
     ta: "பழமையான பலகைப் பதிவு: {date} ({n} நாட்களுக்கு முன்)",
   },
+  oldestObservationCompact: { en: "Boards observed {date} · {age}", ta: "பலகைகள் பார்த்தது {date} · {age}" },
   observationToday: { en: "today", ta: "இன்று" },
   observationsIncomplete: {
     en: "Observation dates are incomplete for {n} masjids.",
     ta: "{n} மஸ்ஜித்களின் பதிவு தேதிகள் முழுமையாக இல்லை.",
   },
   observationUnavailable: {
-    en: "Oldest board observation unavailable (observation dates incomplete).",
-    ta: "பழமையான பலகைப் பதிவு கிடைக்கவில்லை (பதிவு தேதிகள் முழுமையில்லை).",
+    en: "Board observation date unavailable (observation dates incomplete).",
+    ta: "பலகை பார்த்த தேதி கிடைக்கவில்லை (பதிவு தேதிகள் முழுமையில்லை).",
   },
   stale: { en: "Stale · over 14 days", ta: "பழைய பதிவு · 14 நாட்களுக்கு மேல்" },
   timetableSourceStale: {
-    en: "Showing a stale timetable snapshot · last published {date}",
-    ta: "பழைய timetable snapshot காட்டப்படுகிறது · கடைசி வெளியீடு {date}",
+    en: "Timetable source reports that these timings may be stale.",
+    ta: "இந்த நேரங்கள் பழையதாக இருக்கலாம் என timetable மூலம் தெரிவிக்கப்படுகிறது.",
   },
   timetableBundled: {
     en: "Showing bundled fallback timetable",

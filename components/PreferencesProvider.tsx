@@ -22,30 +22,38 @@ const Context = createContext<{
   dataStale: boolean;
   dataSource: DataSource;
   lastDataUpdate: string | null;
+  offline: boolean;
 }>({
-  theme: "classic", setTheme: () => {}, timeFormat: "12h", setTimeFormat: () => {}, language: "ta", setLanguage: () => {},
-  masjids: bundledMasjids, dataStale: false, dataSource: "bundled", lastDataUpdate: null,
+  theme: "night-blue", setTheme: () => {}, timeFormat: "12h", setTimeFormat: () => {}, language: "ta", setLanguage: () => {},
+  masjids: bundledMasjids, dataStale: false, dataSource: "bundled", lastDataUpdate: null, offline: false,
 });
 
 const endpoint = "/api/timetable";
 
 export function PreferencesProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("classic");
+  const [theme, setTheme] = useState<Theme>("night-blue");
   const [timeFormat, setTimeFormat] = useState<TimeFormat>("12h");
   const [language, setLanguage] = useState<Language>("ta");
   const [masjids, setMasjids] = useState(bundledMasjids);
   const [dataStale, setDataStale] = useState(false);
   const [dataSource, setDataSource] = useState<DataSource>("bundled");
   const [lastDataUpdate, setLastDataUpdate] = useState<string | null>(null);
+  const [offline, setOffline] = useState(false);
   const [preferencesLoaded, setPreferencesLoaded] = useState(false);
 
   useEffect(() => {
-    const system = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "classic";
+    const system = "night-blue";
     setTheme((localStorage.getItem("masjid-theme") as Theme) || system);
     setTimeFormat((localStorage.getItem("masjid-time-format") as TimeFormat) || "12h");
     setLanguage(localStorage.getItem("saffready-language") === "en" ? "en" : "ta");
     setPreferencesLoaded(true);
+    setOffline(!navigator.onLine);
+    const online = () => setOffline(false);
+    const offlineNow = () => setOffline(true);
+    window.addEventListener("online", online);
+    window.addEventListener("offline", offlineNow);
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
+    return () => { window.removeEventListener("online", online); window.removeEventListener("offline", offlineNow); };
   }, []);
 
   useEffect(() => {
@@ -142,7 +150,7 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
     };
   }, [preferencesLoaded]);
 
-  return <Context.Provider value={{ theme, setTheme, timeFormat, setTimeFormat, language, setLanguage, masjids, dataStale, dataSource, lastDataUpdate }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ theme, setTheme, timeFormat, setTimeFormat, language, setLanguage, masjids, dataStale, dataSource, lastDataUpdate, offline }}>{children}</Context.Provider>;
 }
 
 export const usePreferences = () => useContext(Context);

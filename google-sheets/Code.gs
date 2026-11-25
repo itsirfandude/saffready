@@ -44,16 +44,57 @@ function initializeSchema() {
 }
 function doGet() {
   const props = PropertiesService.getScriptProperties();
+  let stage = 'buildDataset_';
   try {
     const dataset = buildDataset_();
+    stage = 'JSON.stringify';
     const body = JSON.stringify(dataset);
+    stage = 'LAST_VALID_DATASET.setProperty';
     props.setProperty('LAST_VALID_DATASET', body);
+    stage = 'response construction';
     return json_({...dataset,sourceStale:false});
   } catch (err) {
+    // Log only the failed operation and a stable category, never exception text.
+    console.error('SaffReady publisher failure stage=' + stage + ' category=' + safePublisherErrorCategory_(stage,err));
     const previous = props.getProperty('LAST_VALID_DATASET');
     if (previous) return json_({...JSON.parse(previous),sourceStale:true});
     return json_({ error: 'Timetable validation failed', version: null, masjids: [] });
   }
+}
+function safePublisherErrorCategory_(stage,err) {
+  if(stage==='buildDataset_')return classifyPublisherFailure_(err);
+  if(stage==='JSON.stringify')return 'SERIALIZATION_ERROR';
+  if(stage==='LAST_VALID_DATASET.setProperty')return 'SCRIPT_PROPERTY_WRITE_ERROR';
+  if(stage==='response construction')return 'RESPONSE_CONSTRUCTION_ERROR';
+  return 'UNCLASSIFIED_PUBLISHER_FAILURE';
+}
+function classifyPublisherFailure_(err) {
+  const message=err && err.message ? String(err.message) : '';
+  const exact={
+    'Run initializeSchema once from the bound spreadsheet.':'MISSING_SPREADSHEET_ID_PROPERTY',
+    'Required rows are missing. Empty cells never delete existing records; fill every required field before publishing.':'EMPTY_MASJID_OR_TIMING_ROWS',
+    'Duplicate masjid id in Masjids.':'DUPLICATE_MASJID_ID',
+    'At least one active masjid is required.':'NO_ACTIVE_MASJIDS',
+    'Duplicate masjid_id in Prayer Timings.':'DUPLICATE_TIMING_MASJID_ID',
+    'Orphan Prayer Timings row; every timing row must match a masjid.':'ORPHAN_TIMING_ROW',
+    'Masjid id and English name are required. Leave an unverified Tamil name blank.':'MISSING_MASJID_ID_OR_ENGLISH_NAME',
+    'Dataset record count mismatch.':'DATASET_RECORD_COUNT_MISMATCH',
+  };
+  if(exact[message])return exact[message];
+  if(message.startsWith('observed_on must be YYYY-MM-DD'))return 'INVALID_OBSERVED_ON_FORMAT';
+  if(message.startsWith('effective_from must be YYYY-MM-DD'))return 'INVALID_EFFECTIVE_FROM_FORMAT';
+  if(message.startsWith('Missing or malformed HH:mm value: '))return 'MISSING_OR_INVALID_PRAYER_TIME';
+  if(message.startsWith('Missing Prayer Timings row for '))return 'MISSING_TIMING_ROW';
+  if(message.startsWith('Invalid timing_pattern for '))return 'INVALID_TIMING_PATTERN';
+  if(message.startsWith('Invalid Iqamah type: '))return 'INVALID_IQAMAH_TYPE';
+  if(message.startsWith('Invalid coordinate pair for '))return 'INVALID_COORDINATE_PAIR';
+  if(message.startsWith('Invalid after-Adhan offset: '))return 'INVALID_AFTER_ADHAN_OFFSET';
+  if(message.startsWith('Fixed offset must be blank: '))return 'FIXED_IQAMAH_OFFSET_NOT_BLANK';
+  if(message.startsWith('Only Maghrib may use blank-time after_adhan: '))return 'INVALID_AFTER_ADHAN_CONFIGURATION';
+  if(message.startsWith('Missing sheet tab.'))return 'MISSING_REQUIRED_SHEET_TAB';
+  if(message.startsWith('Missing header row in '))return 'MISSING_SHEET_HEADER_ROW';
+  if(message.startsWith('Unexpected columns in '))return 'UNEXPECTED_SHEET_COLUMNS';
+  return 'UNCLASSIFIED_PUBLISHER_FAILURE';
 }
 function installTimingTrigger() {
   const ss=SpreadsheetApp.getActive();
