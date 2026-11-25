@@ -9,6 +9,7 @@ import { usePreferences } from "@/components/PreferencesProvider";
 import { getNextIqamah } from "@/src/lib/next-iqamah";
 import type { Masjid } from "@/src/types/masjid";
 import { masjidName } from "@/src/lib/masjid-name";
+import { getDailyIqamahs } from "@/src/lib/scheduling";
 
 export function ClientDetail({ masjid: initialMasjid }: { masjid: Masjid }) {
   const { timeFormat, language, masjids } = usePreferences();
@@ -16,6 +17,11 @@ export function ClientDetail({ masjid: initialMasjid }: { masjid: Masjid }) {
   const ta = language === "ta";
   const masjid = masjids.find((item) => item.id === initialMasjid.id) || initialMasjid;
   const next = getNextIqamah(masjid, now);
+  const daily = getDailyIqamahs([masjid], now);
+  const statusByPrayer = Object.fromEntries([
+    ...daily.ongoing.map((item) => [item.prayer, "ongoing"] as const),
+    ...daily.endingSoon.map((item) => [item.prayer, "ending-soon"] as const),
+  ]);
   const directions = masjid.lat !== null && masjid.lng !== null
     ? `https://www.google.com/maps/dir/?api=1&destination=${masjid.lat},${masjid.lng}`
     : (masjid.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(masjid.name_en + ", Coimbatore")}`);
@@ -48,7 +54,7 @@ export function ClientDetail({ masjid: initialMasjid }: { masjid: Masjid }) {
       </section>
       <section className="min-w-0">
         <h2 className="mb-2 text-lg font-semibold">Prayer timetable</h2>
-        <PrayerTimetable masjid={masjid} timeFormat={timeFormat} nextPrayer={"unavailable" in next ? null : next.prayer} nextTomorrow={"unavailable" in next ? false : next.tomorrow} />
+        <PrayerTimetable masjid={masjid} timeFormat={timeFormat} nextPrayer={"unavailable" in next ? null : next.prayer} nextTomorrow={"unavailable" in next ? false : next.tomorrow} statusByPrayer={statusByPrayer} />
         {otherNotes.length > 0 && <p className="mt-4 text-xs leading-6 text-[var(--text-muted)]">{otherNotes.join(" · ")}</p>}
       </section>
     </div>

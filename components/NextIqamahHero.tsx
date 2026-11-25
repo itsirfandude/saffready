@@ -7,6 +7,7 @@ import { formatDuration } from "@/src/lib/format-duration";
 import { copy } from "@/src/constants/strings";
 import type { TravelEstimate } from "@/src/lib/travel";
 import { masjidName } from "@/src/lib/masjid-name";
+import { formatImmediateIqamahLabel, isImmediateIqamah } from "@/src/lib/format-iqamah";
 
 export function NextIqamahHero({
   next, timeFormat, travel, mayMiss = false, showLocationHint = false, ongoing = false,
@@ -22,10 +23,13 @@ export function NextIqamahHero({
   const ta = language === "ta";
   const prayerName = ta ? PRAYER_TA[next.prayer] : PRAYER_EN[next.prayer];
   const name = masjidName(next.masjid, language);
+  const record = next.masjid.prayers.find((item) => item.prayer === next.prayer);
+  const immediate = record ? isImmediateIqamah(record.iqamah) : Boolean(next.immediate);
+  const immediateLabel = immediate ? formatImmediateIqamahLabel(language) : null;
   const travelText = travel ? copy("aboutWalk", language).replace("{n}", String(travel.walkMinutes)) : "";
   return <>
     <section className="rounded-2xl border border-[var(--accent)] bg-[var(--bg-raised)] p-5 shadow-[var(--raised-shadow)] sm:p-7">
-      <p className="text-xs text-[var(--text-muted)]">{ongoing ? (ta ? "நடைபெறும் Jamaat" : "Ongoing Jamaat") : "Next Iqamah"}</p>
+      <p className="text-xs text-[var(--text-muted)]">{ongoing ? copy("ongoing", language) : copy("nextIqamahLabel", language)}</p>
       <div className="mt-1 flex items-center justify-between gap-3">
         <div dir="ltr" className="min-w-0 flex-1">
           <p className="m-0 leading-[1.55]"><span dir="rtl" className="font-arabic-text inline-block text-left [unicode-bidi:isolate]">{PRAYER_AR[next.prayer as keyof typeof PRAYER_AR] ?? ""}</span></p>
@@ -35,8 +39,9 @@ export function NextIqamahHero({
           {mayMiss && <p className="mt-0.5 text-xs font-semibold stale-label">{copy("mayMiss", language)}</p>}
         </div>
         <div className="shrink-0 text-right">
-          <p className="text-3xl font-semibold tracking-tight text-[var(--accent)] sm:text-4xl">{formatTime(next.time, timeFormat)}</p>
-          <p className="mt-0.5 text-xs font-semibold text-[var(--accent)]">{ongoing ? (ta ? "நடைபெறுகிறது · 10 நிமிடக் காட்சி வகை" : "Ongoing · 10 minute display window") : next.tomorrow ? copy("tomorrow", language) : formatDuration(next.minutesRemaining, language)}</p>
+          <p className="font-semibold tracking-tight text-3xl text-[var(--accent)] sm:text-4xl">{formatTime(next.time, timeFormat)}</p>
+          <p className="mt-0.5 text-xs font-semibold text-[var(--accent)]">{ongoing ? copy("ongoing", language) : next.tomorrow ? copy("tomorrow", language) : formatDuration(next.minutesRemaining, language)}</p>
+          {immediateLabel && <p className="mt-0.5 text-xs text-[var(--text-muted)]">{immediateLabel}</p>}
         </div>
       </div>
       <Link href={`/masjid/${next.masjid.id}`} className="mt-2 inline-flex min-h-11 items-center rounded-lg bg-[var(--accent)] px-3 text-xs font-semibold text-[var(--bg)]">{ta ? "Timetable பார்க்க" : "View timetable"}</Link>

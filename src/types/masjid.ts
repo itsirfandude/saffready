@@ -1,6 +1,6 @@
 export type PrayerKey = "fajr" | "dhuhr" | "asr" | "maghrib" | "isha" | "jumuah";
 
-export type IqamahValue = string | { type: "after_adhan"; offsetMin: number } | null;
+export type IqamahValue = string | "immediate" | { type: "after_adhan"; offsetMin: number } | { type: "immediate" } | null;
 
 export interface PrayerRecord {
   prayer: PrayerKey;

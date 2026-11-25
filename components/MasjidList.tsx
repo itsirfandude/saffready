@@ -12,10 +12,11 @@ import { formatDistance } from "@/src/lib/distance";
 type LocationState = "idle" | "loading" | "ready" | "error" | "permission-denied" | "timeout";
 
 export function MasjidList({
-  items, ongoing, timeFormat, sortMode, onNext, onDistance, onUseLocation, location, locationState, now,
+  items, ongoing, endingSoon, timeFormat, sortMode, onNext, onDistance, onUseLocation, location, locationState, now,
 }: {
   items: (NextIqamah | UnavailableIqamah)[];
   ongoing: DailyIqamah[];
+  endingSoon: DailyIqamah[];
   timeFormat: TimeFormat;
   sortMode: "next" | "distance";
   onNext: () => void;
@@ -55,6 +56,10 @@ export function MasjidList({
         {(ongoingOpen ? ongoing : ongoing.slice(0, 2)).map((item) => <JamaatCard key={`${item.masjid.id}-${item.prayer}-${item.time}`} item={item} status="ongoing" now={now} timeFormat={timeFormat} travel={location ? travelForMasjid(location, item.masjid) : null} />)}
       </div>
     </section>}
+    {sortMode === "next" && endingSoon.length > 0 && <section aria-labelledby="ending-soon-heading" className="mb-5">
+      <h2 id="ending-soon-heading" className="mb-2 text-base font-semibold">{ta ? "முடிவடைய உள்ள Jamaat" : "Ending soon"}</h2>
+      <div className="jamaat-grid grid grid-cols-1 gap-3">{endingSoon.map((item) => <JamaatCard key={`${item.masjid.id}-${item.prayer}-${item.time}`} item={item} status="ending-soon" now={now} timeFormat={timeFormat} travel={location ? travelForMasjid(location, item.masjid) : null} />)}</div>
+    </section>}
     {sortMode === "next" && <section aria-labelledby="next-jamaat-heading" className="min-w-0">
       <div className="mb-2 flex items-center justify-between">
         <h2 id="next-jamaat-heading" className="text-base font-semibold">{ta ? "அடுத்த Jamaat" : "Next Jamaat"}</h2>
@@ -72,8 +77,9 @@ export function MasjidList({
         const travel = location ? travelForMasjid(location, item.masjid) : null;
         if ("unavailable" in item) return <div key={item.masjid.id} className="ink-card min-w-0 rounded-xl px-3 py-3"><p className="break-words text-sm font-semibold">{item.masjid.name_en}</p><p className="jamaat-card-detail"><span className="jamaat-status-chip">{ta ? "நேரம் இல்லை" : "Unavailable"}</span><span>{ta ? "நடந்து செல்லும் தூரம் கிடைக்கவில்லை" : "Walking distance unavailable"}</span></p></div>;
         const key = `${item.masjid.id}:${item.prayer}:${item.time}`;
-        const isOngoing = item.at.getTime() <= now.getTime() && now.getTime() - item.at.getTime() <= 10 * 60_000;
-        return <div key={key} className="relative min-w-0"><JamaatCard item={item} status={isOngoing ? "ongoing" : "next"} now={now} timeFormat={timeFormat} travel={travel} />{travel ? <span className="distance-detail">{formatDistance(travel.adjustedDistanceKm)}</span> : <span className="distance-detail">{ta ? "தூரம் கிடைக்கவில்லை" : "Distance unavailable"}</span>}</div>;
+        const elapsed = now.getTime() - item.at.getTime();
+        const status = elapsed >= 0 && elapsed <= 5 * 60_000 ? "ongoing" : elapsed > 5 * 60_000 && elapsed <= 10 * 60_000 ? "ending-soon" : "next";
+        return <div key={key} className="relative min-w-0"><JamaatCard item={item} status={status} now={now} timeFormat={timeFormat} travel={travel} />{travel ? <span className="distance-detail">{formatDistance(travel.adjustedDistanceKm)}</span> : <span className="distance-detail">{ta ? "தூரம் கிடைக்கவில்லை" : "Distance unavailable"}</span>}</div>;
       })}
     </section>}
   </div>;

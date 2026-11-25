@@ -56,6 +56,8 @@ export const STRINGS = {
   sunset: { en: "Sunset", ta: "சூரிய அஸ்தமனம்" },
   iqamah: { en: "Iqamah", ta: "இகாமத்" },
   nextIqamahLabel: { en: "Next Iqamah", ta: "அடுத்த இகாமத்" },
+  ongoing: { en: "Ongoing", ta: "நடைபெறுகிறது" },
+  endingSoon: { en: "Ending soon", ta: "முடிவடைய உள்ளது" },
   timeRemaining: { en: "in {n} minutes", ta: "இன்னும் {n} நிமிடங்களில்" },
   aboutWalk: { en: "about {n} minute walk", ta: "சுமார் {n} நிமிட நடை" },
   aboutBike: { en: "about {n} minutes by bike", ta: "சுமார் {n} நிமிடம் பைக்கில்" },

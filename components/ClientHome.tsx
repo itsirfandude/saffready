@@ -122,19 +122,20 @@ export function ClientHome() {
     if (key !== selectedOngoingKey) setSelectedOngoingKey(key);
   }, [selectedOngoing, selectedOngoingKey]);
   const heroItem: NextIqamah | undefined = selectedOngoing
-    ? { masjid: selectedOngoing.masjid, prayer: selectedOngoing.prayer, time: selectedOngoing.time, at: selectedOngoing.at, minutesRemaining: 0, tomorrow: false }
+    ? { masjid: selectedOngoing.masjid, prayer: selectedOngoing.prayer, time: selectedOngoing.time, at: selectedOngoing.at, minutesRemaining: 0, tomorrow: false, immediate: selectedOngoing.immediate }
     : next;
   const heroTravel: TravelEstimate | null = currentLocation && heroItem ? travelForMasjid(currentLocation, heroItem.masjid) : null;
   const heroMayMiss = Boolean(currentLocation && heroTravel && heroItem && !selectedOngoing && !isReachable(now, heroItem.at, heroTravel.minutes));
   const directory = useMemo(() => {
     if (effectiveSortMode !== "distance" || !currentLocation) return nextItems;
     const ongoingByMasjid = new Map(schedule.ongoing.map((item) => [item.masjid.id, item]));
+    const endingSoonByMasjid = new Map(schedule.endingSoon.map((item) => [item.masjid.id, item]));
     const distanceItems = nextItems.map((item) => {
-      const ongoingItem = ongoingByMasjid.get(item.masjid.id);
-      return ongoingItem ? { ...ongoingItem, minutesRemaining: 0, tomorrow: false } : item;
+      const activeItem = ongoingByMasjid.get(item.masjid.id) ?? endingSoonByMasjid.get(item.masjid.id);
+      return activeItem ? { ...activeItem, minutesRemaining: 0, tomorrow: false } : item;
     });
     return sortByDistance(distanceItems, currentLocation);
-  }, [currentLocation, effectiveSortMode, nextItems, schedule.ongoing]);
+  }, [currentLocation, effectiveSortMode, nextItems, schedule.endingSoon, schedule.ongoing]);
 
   const requestLocation = (sortByLocation: boolean) => {
     if (sortByLocation) setSortMode("distance");
@@ -179,7 +180,7 @@ export function ClientHome() {
       <TimetableDataNotice className="text-[10px] sm:text-[11px]" />
     </section>
     <div className="mt-4">
-      <MasjidList items={directory} ongoing={schedule.ongoing} timeFormat={timeFormat} sortMode={effectiveSortMode} onNext={() => setSortMode("next")} onDistance={() => requestLocation(true)} onUseLocation={() => requestLocation(false)} location={currentLocation} locationState={locationState} now={now} />
+    <MasjidList items={directory} ongoing={schedule.ongoing} endingSoon={schedule.endingSoon} timeFormat={timeFormat} sortMode={effectiveSortMode} onNext={() => setSortMode("next")} onDistance={() => requestLocation(true)} onUseLocation={() => requestLocation(false)} location={currentLocation} locationState={locationState} now={now} />
     </div>
     <section className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--bg-card)]">
       <button type="button" className="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-4 py-2 text-left text-sm font-medium text-[var(--text-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]" aria-expanded={completedOpen} aria-controls="completed-jamaats" onClick={() => setCompletedOpen((open) => !open)}>

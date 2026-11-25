@@ -10,7 +10,7 @@ describe("home layout constraints", () => {
     expect(home).toContain("{heroItem && <div className=\"w-full\">");
     expect(home).toContain("<MasjidList items={directory}");
     expect(list.match(/grid-cols-2/g)).toBeNull();
-    expect((list.match(/jamaat-grid grid grid-cols-1 gap-3/g) ?? []).length).toBe(3);
+    expect((list.match(/jamaat-grid grid grid-cols-1 gap-3/g) ?? []).length).toBe(4);
     expect(styles).toContain("overflow-wrap:anywhere");
   });
 });
