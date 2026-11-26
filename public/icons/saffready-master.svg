@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="SaffReady Mihrab arch with a row of worshippers">
+  <rect width="512" height="512" fill="#050505"/>
+  <g fill="none" stroke="#D4AF37" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M139 364V236a117 117 0 0 1 234 0v128" stroke-width="23"/>
+    <path d="M187 353V330a21 21 0 0 1 42 0v23M235 353V321a21 21 0 0 1 42 0v32M283 353V330a21 21 0 0 1 42 0v23" stroke-width="6"/>
+  </g>
+  <g fill="#D4AF37">
+    <circle cx="208" cy="294" r="9"/>
+    <circle cx="256" cy="283" r="9"/>
+    <circle cx="304" cy="294" r="9"/>
+  </g>
+</svg>

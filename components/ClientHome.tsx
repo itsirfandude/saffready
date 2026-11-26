@@ -20,9 +20,9 @@ import { travelForMasjid, isReachable, type TravelEstimate } from "@/src/lib/tra
 import { copy } from "@/src/constants/strings";
 import { ongoingKey, selectOngoingHero } from "@/src/lib/hero-selection";
 import { COUNTDOWN_REFRESH_MS } from "@/src/lib/countdown";
+import { locationFailureState, type LocationState } from "@/src/lib/location";
 
 type SortMode = "next" | "distance";
-type LocationState = "idle" | "loading" | "ready" | "error" | "permission-denied" | "timeout";
 const LOCATION_CACHE_KEY = "saffready-location-session";
 const LOCATION_TTL_MS = 20 * 60_000;
 type SessionLocation = { location: UserLocation; savedAt: number };
@@ -116,16 +116,23 @@ export function ClientHome() {
     return (aTravel?.minutes ?? Number.POSITIVE_INFINITY) - (bTravel?.minutes ?? Number.POSITIVE_INFINITY);
   }) : schedule.ongoing;
   const selectedOngoing = selectOngoingHero(relevantOngoing, selectedOngoingKey);
+  const relevantEndingSoon = currentLocation ? [...schedule.endingSoon].sort((a, b) => {
+    const aTravel = travelForMasjid(currentLocation, a.masjid);
+    const bTravel = travelForMasjid(currentLocation, b.masjid);
+    return (aTravel?.minutes ?? Number.POSITIVE_INFINITY) - (bTravel?.minutes ?? Number.POSITIVE_INFINITY);
+  }) : schedule.endingSoon;
+  const selectedActive = selectedOngoing ?? relevantEndingSoon[0] ?? null;
   useEffect(() => {
     if (!selectedOngoing) { setSelectedOngoingKey(null); return; }
     const key = ongoingKey(selectedOngoing);
     if (key !== selectedOngoingKey) setSelectedOngoingKey(key);
   }, [selectedOngoing, selectedOngoingKey]);
-  const heroItem: NextIqamah | undefined = selectedOngoing
-    ? { masjid: selectedOngoing.masjid, prayer: selectedOngoing.prayer, time: selectedOngoing.time, at: selectedOngoing.at, minutesRemaining: 0, tomorrow: false, immediate: selectedOngoing.immediate }
+  const heroItem: NextIqamah | undefined = selectedActive
+    ? { masjid: selectedActive.masjid, prayer: selectedActive.prayer, time: selectedActive.time, at: selectedActive.at, minutesRemaining: 0, tomorrow: false, immediate: selectedActive.immediate }
     : next;
+  const heroStatus = selectedOngoing ? "ongoing" : selectedActive ? "endingSoon" : undefined;
   const heroTravel: TravelEstimate | null = currentLocation && heroItem ? travelForMasjid(currentLocation, heroItem.masjid) : null;
-  const heroMayMiss = Boolean(currentLocation && heroTravel && heroItem && !selectedOngoing && !isReachable(now, heroItem.at, heroTravel.minutes));
+  const heroMayMiss = Boolean(currentLocation && heroTravel && heroItem && !selectedActive && !isReachable(now, heroItem.at, heroTravel.minutes));
   const directory = useMemo(() => {
     if (effectiveSortMode !== "distance" || !currentLocation) return nextItems;
     const ongoingByMasjid = new Map(schedule.ongoing.map((item) => [item.masjid.id, item]));
@@ -156,7 +163,7 @@ export function ClientHome() {
       setLocationSavedAt(result.savedAt);
       setLocationState("ready");
     }, (error) => {
-      setLocationState(error.code === 1 ? "permission-denied" : error.code === 3 ? "timeout" : "error");
+      setLocationState(locationFailureState(error.code));
       if (sortByLocation) setSortMode("next");
     }, { enableHighAccuracy: false, timeout: 10_000, maximumAge: 0 });
   };
@@ -171,7 +178,7 @@ export function ClientHome() {
 
   return <main className="mx-auto min-h-screen w-full max-w-[760px] px-4 pb-10 sm:px-6">
     <AppHeader />
-    {heroItem && <div className="w-full"><NextIqamahHero next={heroItem} timeFormat={timeFormat} travel={heroTravel} mayMiss={heroMayMiss} ongoing={Boolean(selectedOngoing)} /></div>}
+    {heroItem && <div className="w-full"><NextIqamahHero next={heroItem} timeFormat={timeFormat} travel={heroTravel} mayMiss={heroMayMiss} status={heroStatus} /></div>}
     <DailyContext />
     <section aria-live="polite" className="my-2 flex min-h-5 flex-wrap items-center gap-x-2 gap-y-1 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2.5 text-[11px] leading-5 text-[var(--text-muted)] sm:px-5">
       <p className={freshness.stale ? "stale-label font-semibold" : "text-[var(--text-muted)]"}>{freshnessText}</p>

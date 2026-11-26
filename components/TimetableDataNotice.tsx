@@ -16,15 +16,13 @@ export function TimetableDataNotice({ className = "" }: { className?: string }) 
   const offlineNotice = offlineTimetableNotice(offline, dataSource, language);
   if (offlineNotice) return <>
     <p role="status" className={`font-medium text-[var(--text-muted)] ${className}`.trim()}>{offlineNotice}</p>
-    {dataStale && dataSource === "source-stale" && <p role="status" className={`font-medium stale-label ${className}`.trim()}>{copy("timetableSourceStale", language)}</p>}
   </>;
+  if (dataSource === "source-stale") return null;
   if (dataSource === "cached") return null;
   if (!dataStale && dataSource !== "bundled") return null;
   if ((dataSource === "bundled" || dataSource === "expired") && !offline) return null;
   const message = dataSource === "bundled"
     ? copy("timetableBundled", language)
-    : dataSource === "source-stale"
-    ? copy("timetableSourceStale", language)
     : dataSource === "expired"
         ? copy("timetableCacheExpired", language)
         : copy("timetableUnavailable", language);

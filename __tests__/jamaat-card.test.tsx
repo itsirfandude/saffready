@@ -38,6 +38,25 @@ describe("Jamaat cards", () => {
     expect(nextHtml).toContain("9 min");
   });
 
+  it("uses compact Salah badges and a Salah caption on cards and detail timetables", () => {
+    const card = renderToStaticMarkup(<JamaatCard item={ongoing} status="ongoing" now={at} timeFormat="12h" travel={null} />);
+    expect(card).toContain("நடைபெறுகிறது");
+    expect(card).toContain("தொழுகை நிலை");
+    expect(card).not.toContain("Iqamah status");
+    const timetable = renderToStaticMarkup(<PrayerTimetable masjid={masjid} timeFormat="12h" statusByPrayer={{ isha: "ongoing" }} />);
+    expect(timetable).toContain("நடைபெறுகிறது");
+    expect(timetable).toContain("தொழுகை நிலை");
+    expect(timetable).not.toContain("Iqamah status");
+  });
+
+  it("shows each contextual hero status once without repeating it below the time", () => {
+    const ongoingHero = renderToStaticMarkup(<NextIqamahHero next={next} timeFormat="12h" status="ongoing" />);
+    expect(ongoingHero.match(/தொழுகை நடைபெறுகிறது/g)).toHaveLength(1);
+    const endingHero = renderToStaticMarkup(<NextIqamahHero next={next} timeFormat="12h" status="endingSoon" />);
+    expect(endingHero.match(/தொழுகை முடிவடைய உள்ளது/g)).toHaveLength(1);
+    expect(endingHero).not.toContain("இகாமத் நேரம்");
+  });
+
   it("shows immediate Iqamah clock time, numerical countdown, and supporting labels", () => {
     const immediateMasjid = { ...masjid, prayers: [{ ...masjid.prayers[0], adhan: "17:55", iqamah: { type: "after_adhan" as const, offsetMin: 0 } }] };
     const immediateAt = new Date("2026-11-21T12:25:00Z");

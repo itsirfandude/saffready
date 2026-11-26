@@ -10,14 +10,14 @@ import { masjidName } from "@/src/lib/masjid-name";
 import { formatImmediateIqamahLabel, isImmediateIqamah } from "@/src/lib/format-iqamah";
 
 export function NextIqamahHero({
-  next, timeFormat, travel, mayMiss = false, showLocationHint = false, ongoing = false,
+  next, timeFormat, travel, mayMiss = false, showLocationHint = false, status,
 }: {
   next: NextIqamah;
   timeFormat: TimeFormat;
   travel?: TravelEstimate | null;
   mayMiss?: boolean;
   showLocationHint?: boolean;
-  ongoing?: boolean;
+  status?: "ongoing" | "endingSoon";
 }) {
   const { language } = usePreferences();
   const ta = language === "ta";
@@ -29,7 +29,7 @@ export function NextIqamahHero({
   const travelText = travel ? copy("aboutWalk", language).replace("{n}", String(travel.walkMinutes)) : "";
   return <>
     <section className="rounded-2xl border border-[var(--accent)] bg-[var(--bg-raised)] p-5 shadow-[var(--raised-shadow)] sm:p-7">
-      <p className="text-xs text-[var(--text-muted)]">{ongoing ? copy("ongoing", language) : copy("nextIqamahLabel", language)}</p>
+      <p className={status ? "text-sm font-semibold text-[var(--accent)]" : "text-xs text-[var(--text-muted)]"}>{status === "ongoing" ? copy("ongoingContext", language) : status === "endingSoon" ? copy("endingSoonContext", language) : copy("nextIqamahLabel", language)}</p>
       <div className="mt-1 flex items-center justify-between gap-3">
         <div dir="ltr" className="min-w-0 flex-1">
           <p className="m-0 leading-[1.55]"><span dir="rtl" className="font-arabic-text inline-block text-left [unicode-bidi:isolate]">{PRAYER_AR[next.prayer as keyof typeof PRAYER_AR] ?? ""}</span></p>
@@ -40,7 +40,7 @@ export function NextIqamahHero({
         </div>
         <div className="shrink-0 text-right">
           <p className="font-semibold tracking-tight text-3xl text-[var(--accent)] sm:text-4xl">{formatTime(next.time, timeFormat)}</p>
-          <p className="mt-0.5 text-xs font-semibold text-[var(--accent)]">{ongoing ? copy("ongoing", language) : next.tomorrow ? copy("tomorrow", language) : formatDuration(next.minutesRemaining, language)}</p>
+          {!status && <p className="mt-0.5 text-xs font-semibold text-[var(--accent)]">{next.tomorrow ? copy("tomorrow", language) : formatDuration(next.minutesRemaining, language)}</p>}
           {immediateLabel && <p className="mt-0.5 text-xs text-[var(--text-muted)]">{immediateLabel}</p>}
         </div>
       </div>

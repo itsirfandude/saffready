@@ -9,6 +9,7 @@ import { usePreferences } from "@/components/PreferencesProvider";
 import type { TravelEstimate } from "@/src/lib/travel";
 import { formatCountdown, minutesUntil } from "@/src/lib/countdown";
 import { PRAYER_TA, PRAYER_EN } from "@/src/constants/prayers";
+import { copy } from "@/src/constants/strings";
 
 export function JamaatCard({
   item, status, now, timeFormat, travel,
@@ -30,13 +31,13 @@ export function JamaatCard({
   const tone = status === "ongoing" ? "jamaat-card-ongoing" : status === "ending-soon" ? "jamaat-card-ending-soon" : "jamaat-card-next";
 
   const isActive = status === "ongoing" || status === "ending-soon";
-  const statusLabel = status === "ongoing" ? (ta ? "நடைபெறுகிறது" : "Ongoing") : status === "ending-soon" ? (ta ? "முடிவடைய உள்ளது" : "Ending soon") : (ta ? "வரவிருக்கிறது" : "Upcoming");
+  const statusLabel = status === "ongoing" ? copy("ongoing", language) : status === "ending-soon" ? copy("endingSoon", language) : (ta ? "வரவிருக்கிறது" : "Upcoming");
   return <Link href={`/masjid/${item.masjid.id}`} className={`jamaat-card ${tone}`} aria-label={`${name}, ${prayerName}, ${iqamahTime}, ${isActive ? statusLabel : `${countdown} until Iqamah`}, ${travel ? `${travel.walkMinutes} minute walk, ${Math.round(travel.adjustedDistanceKm * 1000)} meters` : "Walking time unavailable"}`}>
     <div className="jamaat-card-top"><p className={`jamaat-card-name ${ta ? "font-tamil-text" : ""}`}>{name}</p><p className="jamaat-prayer-name">{prayerName}</p></div>
     <div className="jamaat-card-main">
       <p className="jamaat-iqamah-time">{iqamahTime}</p>
       {immediate && <p className="text-xs text-[var(--text-muted)]">{formatImmediateIqamahLabel(language)}</p>}
-      <div className="jamaat-countdown"><p aria-live="off">{isActive ? <span className="jamaat-status-chip">{statusLabel}</span> : countdown}</p><span>{isActive ? (ta ? "இகாமத் நேரம்" : "Iqamah status") : ta ? "இகாமத்துக்கு" : "until Iqamah"}</span></div>
+      <div className="jamaat-countdown"><p aria-live="off">{isActive ? <span className="jamaat-status-chip">{statusLabel}</span> : countdown}</p><span>{isActive ? copy("salahStatus", language) : ta ? "இகாமத்துக்கு" : "until Iqamah"}</span></div>
     </div>
     {status === "next" && <span className="sr-only jamaat-status-chip">{statusLabel}</span>}
     <div className="jamaat-card-meta" aria-label={travel ? `${travel.walkMinutes} min walk · ${Math.round(travel.adjustedDistanceKm * 1000)} m` : ta ? "நடை நேரம்: இருப்பிடம் தேவை" : "Walking time unavailable · use location"}>
