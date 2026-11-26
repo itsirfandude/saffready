@@ -17,11 +17,13 @@ describe("SaffReady PWA assets and manifest", () => {
     expect(value).toMatchObject({
       name: "SaffReady · Find your next Jamaat.",
       short_name: "SaffReady",
+      id: "/",
       start_url: "/",
       scope: "/",
       display: "standalone",
       background_color: "#050505",
       theme_color: "#050505",
+      prefer_related_applications: false,
     });
   });
 

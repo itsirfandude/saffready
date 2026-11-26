@@ -77,8 +77,16 @@ export class InstallPromptController {
   }
 }
 
-export function getInstallPlatform(userAgent: string, standalone: boolean): "installed" | "ios-safari" | "ios-other" | "other" {
+export type InstallPlatform = "installed" | "ios-safari" | "ios-other" | "android-brave" | "android-chrome" | "android-other" | "other";
+
+export function getInstallPlatform(userAgent: string, standalone: boolean, isIPad = false): InstallPlatform {
   if (standalone) return "installed";
-  if (!/iPad|iPhone|iPod/i.test(userAgent)) return "other";
-  return /CriOS|FxiOS|EdgiOS|OPiOS/i.test(userAgent) ? "ios-other" : "ios-safari";
+  if (/iPad|iPhone|iPod/i.test(userAgent) || isIPad) {
+    return /CriOS|FxiOS|EdgiOS|OPiOS/i.test(userAgent) ? "ios-other" : "ios-safari";
+  }
+  if (/Android/i.test(userAgent)) {
+    if (/Brave/i.test(userAgent)) return "android-brave";
+    return /Chrome/i.test(userAgent) ? "android-chrome" : "android-other";
+  }
+  return "other";
 }

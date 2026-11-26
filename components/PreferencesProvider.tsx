@@ -52,8 +52,72 @@ export function PreferencesProvider({ children }: { children: React.ReactNode })
     const offlineNow = () => setOffline(true);
     window.addEventListener("online", online);
     window.addEventListener("offline", offlineNow);
-    if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => {});
-    return () => { window.removeEventListener("online", online); window.removeEventListener("offline", offlineNow); };
+    const isDevelopment = process.env.NODE_ENV === "development";
+    let beforeInstallPromptFired = false;
+    const isStandalone = () => window.matchMedia("(display-mode: standalone)").matches
+      || Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
+    const logPwaStatus = (details: Record<string, unknown> = {}) => {
+      if (!isDevelopment) return;
+      console.info("[SaffReady PWA diagnostics]", {
+        serviceWorkerSupported: "serviceWorker" in navigator,
+        controlled: "serviceWorker" in navigator && Boolean(navigator.serviceWorker.controller),
+        beforeInstallPromptFired,
+        standalone: isStandalone(),
+        ...details,
+      });
+    };
+    const onBeforeInstallPrompt = () => {
+      beforeInstallPromptFired = true;
+      logPwaStatus({ event: "beforeinstallprompt" });
+    };
+    const onControllerChange = () => logPwaStatus({ event: "controllerchange" });
+    if (isDevelopment) window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    if (isDevelopment && "serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+      void fetch("/manifest.webmanifest", { cache: "no-store" }).then(async (response) => {
+        const text = await response.text();
+        let parsed = false;
+        let parseError: string | undefined;
+        try { JSON.parse(text); parsed = true; } catch (error) { parseError = String(error); }
+        logPwaStatus({
+          event: "manifest",
+          status: response.status,
+          contentType: response.headers.get("content-type"),
+          redirected: response.redirected,
+          parsed,
+          ...(parseError ? { parseError } : {}),
+        });
+      }).catch((error: unknown) => logPwaStatus({ event: "manifest", fetchError: String(error) }));
+      void navigator.serviceWorker.register("/sw.js").then((registration) => {
+        const reportRegistration = (event?: string) => logPwaStatus({
+          event: event ?? "service-worker-registration",
+          scope: registration.scope,
+          active: registration.active?.state ?? null,
+          waiting: registration.waiting?.state ?? null,
+          installing: registration.installing?.state ?? null,
+        });
+        reportRegistration();
+        for (const worker of [registration.installing, registration.waiting, registration.active]) {
+          worker?.addEventListener("statechange", () => reportRegistration("service-worker-statechange"));
+        }
+        registration.addEventListener("updatefound", () => {
+          reportRegistration("service-worker-updatefound");
+          registration.installing?.addEventListener("statechange", () => reportRegistration("service-worker-statechange"));
+        });
+      }).catch((error: unknown) => logPwaStatus({ event: "service-worker-registration", registrationError: String(error) }));
+      logPwaStatus({ event: "initial" });
+    } else {
+      if ("serviceWorker" in navigator) void navigator.serviceWorker.register("/sw.js").catch(() => {});
+      logPwaStatus({ event: "initial" });
+    }
+    return () => {
+      window.removeEventListener("online", online);
+      window.removeEventListener("offline", offlineNow);
+      if (isDevelopment) {
+        window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+        if ("serviceWorker" in navigator) navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+      }
+    };
   }, []);
 
   useEffect(() => {

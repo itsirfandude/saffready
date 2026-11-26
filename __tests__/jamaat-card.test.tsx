@@ -33,7 +33,9 @@ describe("Jamaat cards", () => {
     expect(html).not.toContain("TIME LEFT TO IQAMAH");
     expect(html).not.toContain("00:00");
     expect(html).toContain("jamaat-card-ongoing");
-    expect(html).toContain("Walking time unavailable");
+    expect(html).not.toContain("Walking time unavailable");
+    const locationReadyWithoutMasjidCoordinates = renderToStaticMarkup(<JamaatCard item={ongoing} status="ongoing" now={at} timeFormat="12h" travel={null} locationState="ready" />);
+    expect(locationReadyWithoutMasjidCoordinates).toContain("இந்த மஸ்ஜிதிற்கான தூரமும் நடை நேரமும் கிடைக்கவில்லை.");
     const nextHtml = renderToStaticMarkup(<JamaatCard item={next} status="next" now={new Date(at.getTime() + 1_000)} timeFormat="12h" travel={null} />);
     expect(nextHtml).toContain("9 min");
   });
@@ -93,7 +95,9 @@ describe("Jamaat cards", () => {
     expect((html.match(/jamaat-grid grid grid-cols-1 gap-3/g) ?? []).length).toBe(2);
     expect((html.match(/jamaat-card-ongoing/g) ?? []).length).toBe(2);
     expect(html).toContain("jamaat-card-next");
-    expect(html).toContain('aria-label="என் இருப்பிடம்"');
+    expect(html).toContain('aria-label="என் இருப்பிடத்தைப் பயன்படுத்து"');
+    expect(html).toContain("இருப்பிடம் விருப்பத்தேர்வு");
+    expect(html).toContain("என் இருப்பிடத்தைப் பயன்படுத்து");
     expect(html).toContain('aria-pressed="true"');
     expect(html).toContain("மஸ்ஜித்கள்");
   });
@@ -121,5 +125,8 @@ describe("Jamaat cards", () => {
     expect(html).toContain("சுமார் 5 நிமிட நடை · 390 m");
     expect(html).toContain("Timetable பார்க்க");
     expect(html).toContain("العشاء");
+    const withoutLocation = renderToStaticMarkup(<NextIqamahHero next={next} timeFormat="12h" />);
+    expect(withoutLocation).not.toContain("Walking details unavailable");
+    expect(withoutLocation).not.toContain("நடை நேரம் கிடைக்கவில்லை");
   });
 });

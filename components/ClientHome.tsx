@@ -152,7 +152,7 @@ export function ClientHome() {
     setLocation(null);
     setLocationSavedAt(null);
     if (!navigator.geolocation) {
-      setLocationState("error");
+      setLocationState("unsupported");
       if (sortByLocation) setSortMode("next");
       return;
     }

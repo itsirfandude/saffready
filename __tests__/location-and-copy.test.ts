@@ -21,10 +21,25 @@ describe("optional location experience", () => {
     expect(locationFailureState(1)).toBe("permission-denied");
     expect(locationFailureState(3)).toBe("timeout");
     expect(locationFailureState(2)).toBe("error");
-    expect(copy("locationHint", "en")).toContain("Optional");
+    expect(copy("locationHint", "en")).toContain("optional");
     expect(copy("locationHint", "en")).toContain("walking time");
-    expect(copy("locationDenied", "en")).toContain("browser settings");
-    expect(copy("locationUnavailable", "en")).toContain("Prayer times are still available");
+    expect(copy("locationHint", "en")).toContain("distance");
+    expect(copy("retryLocation", "en")).toBe("Try location again");
+    expect(copy("locationDenied", "en")).toContain("site settings");
+    expect(copy("locationUnavailable", "en")).toContain("Prayer times remain available");
+    expect(copy("locationUnsupported", "en")).toContain("cannot provide your location");
+    expect(copy("locationHint", "ta")).toContain("விருப்பத்தேர்வு");
+    expect(copy("retryLocation", "ta")).toContain("மீண்டும் முயற்சிக்கவும்");
+    const hero = read("components/NextIqamahHero.tsx");
+    expect(hero).toContain("{travel && <p");
+    expect(hero).not.toContain("Walking details unavailable");
+    const cards = read("components/JamaatCard.tsx");
+    expect(cards).toContain('locationState === "ready"');
+    expect(cards).not.toContain("Walking time unavailable");
+    const list = read("components/MasjidList.tsx");
+    expect(list).toContain("copy(\"locationHint\", language)");
+    expect(list).toContain("copy(\"retryLocation\", language)");
+    expect(list).toContain("copy(\"locationUnsupported\", language)");
   });
 });
 

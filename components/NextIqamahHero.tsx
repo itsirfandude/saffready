@@ -35,7 +35,7 @@ export function NextIqamahHero({
           <p className="m-0 leading-[1.55]"><span dir="rtl" className="font-arabic-text inline-block text-left [unicode-bidi:isolate]">{PRAYER_AR[next.prayer as keyof typeof PRAYER_AR] ?? ""}</span></p>
           <p className={`whitespace-normal break-words ${ta ? "font-tamil-text text-base" : "text-sm font-medium"}`}>{prayerName}</p>
           <p className={`mt-0.5 whitespace-normal break-words font-semibold ${ta ? "font-tamil-text text-base" : "text-sm"}`}>{name}</p>
-          <p className="mt-0.5 text-xs text-[var(--text-muted)]"><span aria-hidden="true">🚶 </span>{travel ? `${travelText} · ${Math.round(travel.adjustedDistanceKm * 1000)} m` : (ta ? "நடை நேரம் கிடைக்கவில்லை · இருப்பிடத்தைப் பயன்படுத்தவும்" : "Walking details unavailable · use your location")}</p>
+          {travel && <p className="mt-0.5 text-xs text-[var(--text-muted)]"><span aria-hidden="true">🚶 </span>{`${travelText} · ${Math.round(travel.adjustedDistanceKm * 1000)} m`}</p>}
           {mayMiss && <p className="mt-0.5 text-xs font-semibold stale-label">{copy("mayMiss", language)}</p>}
         </div>
         <div className="shrink-0 text-right">

@@ -8,8 +8,8 @@ import type { UserLocation } from "@/src/lib/distance";
 import { travelForMasjid } from "@/src/lib/travel";
 import { copy } from "@/src/constants/strings";
 import { formatDistance } from "@/src/lib/distance";
+import type { LocationState } from "@/src/lib/location";
 
-type LocationState = "idle" | "loading" | "ready" | "error" | "permission-denied" | "timeout";
 
 export function MasjidList({
   items, ongoing, endingSoon, timeFormat, sortMode, onNext, onDistance, onUseLocation, location, locationState, now,
@@ -32,7 +32,10 @@ export function MasjidList({
   const status = locationState === "loading" ? copy("locationLoading", language)
     : locationState === "permission-denied" ? copy("locationDenied", language)
       : locationState === "timeout" ? copy("locationTimedOut", language)
-        : locationState === "error" ? copy("locationUnavailable", language) : "";
+        : locationState === "unsupported" ? copy("locationUnsupported", language)
+          : locationState === "error" ? copy("locationUnavailable", language) : "";
+  const locationAction = locationState === "permission-denied" || locationState === "error" || locationState === "timeout" || locationState === "unsupported"
+    ? copy("retryLocation", language) : copy("useLocation", language);
 
   return <div className="mt-0 min-w-0">
     <div className="mb-2 flex items-end justify-between gap-3">
@@ -42,8 +45,9 @@ export function MasjidList({
     <div role="group" aria-label={ta ? "வரிசை மற்றும் இருப்பிடக் கட்டுப்பாடுகள்" : "Sort and location controls"} className="mb-2 flex flex-wrap items-center gap-2 text-xs">
       <button type="button" aria-pressed={sortMode === "next"} onClick={onNext} className={`min-h-10 rounded-lg px-3 ${sortMode === "next" ? "border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,var(--bg-card))] font-semibold text-[var(--accent)]" : "border border-[var(--border)] text-[var(--text-muted)]"}`}>{ta ? "அடுத்த இகாமத்" : "Next Iqamah"}</button>
       <button type="button" aria-pressed={sortMode === "distance"} onClick={onDistance} disabled={locationState === "loading"} className={`min-h-10 rounded-lg px-3 disabled:opacity-60 ${sortMode === "distance" ? "border border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_10%,var(--bg-card))] font-semibold text-[var(--accent)]" : "border border-[var(--border)] text-[var(--text-muted)]"}`}>{ta ? "தூரம்" : "Distance"}</button>
-      <button type="button" aria-label={copy("useLocation", language)} title={copy("useLocation", language)} onClick={onUseLocation} disabled={locationState === "loading"} className="flex min-h-10 items-center justify-center rounded-lg border border-[var(--border)] px-3 text-[var(--text)] disabled:opacity-60">
+      <button type="button" aria-label={locationAction} onClick={onUseLocation} disabled={locationState === "loading"} className="flex min-h-10 items-center justify-center gap-2 rounded-lg border border-[var(--border)] px-3 text-[var(--text)] disabled:opacity-60">
         {locationState === "loading" ? <span aria-hidden="true" className="animate-pulse text-lg">…</span> : <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.3"/></svg>}
+        <span>{locationState === "loading" ? copy("locationLoading", language) : locationAction}</span>
       </button>
     </div>
     {(status || !location) && <p role="status" aria-live="polite" className="mb-2 min-h-4 text-[11px] leading-5 text-[var(--text-muted)]">{status || copy("locationHint", language)}</p>}
@@ -53,12 +57,12 @@ export function MasjidList({
         {ongoing.length > 2 && <button type="button" aria-expanded={ongoingOpen} aria-controls="ongoing-jamaats" onClick={() => setOngoingOpen((open) => !open)} className="min-h-10 px-2 text-sm font-semibold text-[var(--accent)]">{ongoingOpen ? (ta ? "குறைவாகக் காட்டு" : "Show less") : `+${ongoing.length - 2} more ongoing`}</button>}
       </div>
       <div id="ongoing-jamaats" className="jamaat-grid grid grid-cols-1 gap-3">
-        {(ongoingOpen ? ongoing : ongoing.slice(0, 2)).map((item) => <JamaatCard key={`${item.masjid.id}-${item.prayer}-${item.time}`} item={item} status="ongoing" now={now} timeFormat={timeFormat} travel={location ? travelForMasjid(location, item.masjid) : null} />)}
+        {(ongoingOpen ? ongoing : ongoing.slice(0, 2)).map((item) => <JamaatCard key={`${item.masjid.id}-${item.prayer}-${item.time}`} item={item} status="ongoing" now={now} timeFormat={timeFormat} travel={location ? travelForMasjid(location, item.masjid) : null} locationState={locationState} />)}
       </div>
     </section>}
     {sortMode === "next" && endingSoon.length > 0 && <section aria-labelledby="ending-soon-heading" className="mb-5">
       <h2 id="ending-soon-heading" className="mb-2 text-base font-semibold">{ta ? "முடிவடைய உள்ள Jamaat" : "Ending soon"}</h2>
-      <div className="jamaat-grid grid grid-cols-1 gap-3">{endingSoon.map((item) => <JamaatCard key={`${item.masjid.id}-${item.prayer}-${item.time}`} item={item} status="ending-soon" now={now} timeFormat={timeFormat} travel={location ? travelForMasjid(location, item.masjid) : null} />)}</div>
+      <div className="jamaat-grid grid grid-cols-1 gap-3">{endingSoon.map((item) => <JamaatCard key={`${item.masjid.id}-${item.prayer}-${item.time}`} item={item} status="ending-soon" now={now} timeFormat={timeFormat} travel={location ? travelForMasjid(location, item.masjid) : null} locationState={locationState} />)}</div>
     </section>}
     {sortMode === "next" && <section aria-labelledby="next-jamaat-heading" className="min-w-0">
       <div className="mb-2 flex items-center justify-between">
@@ -68,7 +72,7 @@ export function MasjidList({
       {items.map((item) => {
         const travel = location ? travelForMasjid(location, item.masjid) : null;
         if ("unavailable" in item) return <div key={item.masjid.id} className="ink-card rounded-xl px-3 py-3"><p className="break-words text-sm font-semibold">{item.masjid.name_en}</p><p className="text-xs text-[var(--text-muted)]">{ta ? "Timings கிடைக்கவில்லை" : "Timings unavailable"}</p></div>;
-        return <JamaatCard key={`${item.masjid.id}-${item.prayer}`} item={item} status="next" now={now} timeFormat={timeFormat} travel={travel} />;
+        return <JamaatCard key={`${item.masjid.id}-${item.prayer}`} item={item} status="next" now={now} timeFormat={timeFormat} travel={travel} locationState={locationState} />;
       })}
     </div>
     </section>}
@@ -79,7 +83,7 @@ export function MasjidList({
         const key = `${item.masjid.id}:${item.prayer}:${item.time}`;
         const elapsed = now.getTime() - item.at.getTime();
         const status = elapsed >= 0 && elapsed <= 5 * 60_000 ? "ongoing" : elapsed > 5 * 60_000 && elapsed <= 10 * 60_000 ? "ending-soon" : "next";
-        return <div key={key} className="relative min-w-0"><JamaatCard item={item} status={status} now={now} timeFormat={timeFormat} travel={travel} />{travel ? <span className="distance-detail">{formatDistance(travel.adjustedDistanceKm)}</span> : <span className="distance-detail">{ta ? "தூரம் கிடைக்கவில்லை" : "Distance unavailable"}</span>}</div>;
+        return <div key={key} className="relative min-w-0"><JamaatCard item={item} status={status} now={now} timeFormat={timeFormat} travel={travel} locationState={locationState} />{travel ? <span className="distance-detail">{formatDistance(travel.adjustedDistanceKm)}</span> : locationState === "ready" ? <span className="distance-detail">{copy("travelUnavailable", language)}</span> : null}</div>;
       })}
     </section>}
   </div>;

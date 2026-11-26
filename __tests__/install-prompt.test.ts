@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { getInstallPlatform, INSTALL_DISMISSED_KEY, InstallPromptController, type InstallState } from "@/src/lib/install-prompt";
+import { InstallAppSettings } from "@/components/InstallAppSettings";
 
 class MemoryStorage {
   private values = new Map<string, string>();
@@ -71,8 +74,11 @@ describe("install prompt lifecycle", () => {
   it("detects installed apps and the iOS Safari installation path", () => {
     expect(getInstallPlatform("iPhone Safari", false)).toBe("ios-safari");
     expect(getInstallPlatform("iPhone CriOS", false)).toBe("ios-other");
+    expect(getInstallPlatform("Mozilla/5.0 Macintosh", false, true)).toBe("ios-safari");
     expect(getInstallPlatform("Android Chrome", true)).toBe("installed");
-    expect(getInstallPlatform("Android Chrome", false)).toBe("other");
+    expect(getInstallPlatform("Android Chrome", false)).toBe("android-chrome");
+    expect(getInstallPlatform("Mozilla/5.0 (Linux; Android 14) Chrome/130 Mobile Safari/537.36", false)).toBe("android-chrome");
+    expect(getInstallPlatform("Mozilla/5.0 (Linux; Android 14) Brave Chrome/130 Mobile Safari/537.36", false)).toBe("android-brave");
     const target = new FakeTarget();
     const states: InstallState[] = [];
     const controller = new InstallPromptController(target, new MemoryStorage(), (state) => states.push(state));
@@ -85,6 +91,15 @@ describe("install prompt lifecycle", () => {
     const source = await readInstallSettings();
     expect(source).toContain("In Safari, tap Share, then choose Add to Home Screen.");
     expect(source).toContain("Open SaffReady in Safari, then tap Share → Add to Home Screen.");
+  });
+
+  it("keeps the Settings install entry visible before beforeinstallprompt fires", () => {
+    const markup = renderToStaticMarkup(createElement(InstallAppSettings));
+    expect(markup).toContain('aria-labelledby="install-app-heading"');
+    expect(markup).toContain('id="install-app-heading"');
+    expect(markup).toContain("செயலியை நிறுவு");
+    expect(markup).toContain('role="note"');
+    expect(markup).toContain("SaffReady-ஐ");
   });
 });
 
