@@ -6,6 +6,8 @@ const { loadEnvConfig } = nextEnv;
 import { validateMasjids } from "../src/lib/validation.ts";
 
 export const DEFAULT_FALLBACK_PATH = resolve("data/masjids.json");
+export const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
+const MAX_REQUEST_TIMEOUT_MS = 120_000;
 
 function numericVersion(value) {
   if ((typeof value !== "string" && typeof value !== "number") || !/^\d+$/.test(String(value))) return null;
@@ -15,6 +17,7 @@ function numericVersion(value) {
 
 export async function syncTimetable({
   endpoint = process.env.SHEETS_JSON_URL,
+  timeoutMs = DEFAULT_REQUEST_TIMEOUT_MS,
   outputPath = DEFAULT_FALLBACK_PATH,
   fetchImpl = fetch,
   now = Date.now,
@@ -24,7 +27,10 @@ export async function syncTimetable({
   unlinkImpl = unlink,
 } = {}) {
   if (!endpoint) throw new Error("SHEETS_JSON_URL is required");
-  const response = await fetchImpl(endpoint, { redirect: "follow", cache: "no-store" });
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > MAX_REQUEST_TIMEOUT_MS) {
+    throw new Error(`SHEETS_SYNC_TIMEOUT_MS must be an integer from 1 to ${MAX_REQUEST_TIMEOUT_MS}`);
+  }
+  const response = await fetchImpl(endpoint, { redirect: "follow", cache: "no-store", signal: AbortSignal.timeout(timeoutMs) });
   if (!response.ok) throw new Error(`Publisher request failed (${response.status})`);
 
   let payload;

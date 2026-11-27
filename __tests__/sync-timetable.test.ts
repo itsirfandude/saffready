@@ -28,7 +28,9 @@ describe("Google Sheets timetable sync", () => {
     const payload = makePayload(11, [1, 2]);
     const result = await syncTimetable({ endpoint: "https://example.test/exec", outputPath, fetchImpl: async () => response(payload), now: () => 123 });
     expect(result).toEqual({ version: 11, masjidCount: 15 });
-    expect(JSON.parse(await readFile(outputPath, "utf8"))).toEqual(payload);
+    const generated=JSON.parse(await readFile(outputPath, "utf8"));
+    expect(generated).toEqual(payload);
+    expect(generated.masjids.map((masjid: {id:string})=>masjid.id)).toEqual(payload.masjids.map((masjid)=>masjid.id));
     await expect(readdir(dirname(outputPath))).resolves.toEqual(["masjids.json"]);
   });
 
@@ -52,6 +54,25 @@ describe("Google Sheets timetable sync", () => {
     await writeFile(outputPath, original);
     await expect(syncTimetable({ endpoint: "https://example.test/exec", outputPath, fetchImpl: async () => { throw new Error("offline"); } })).rejects.toThrow("offline");
     expect(await readFile(outputPath, "utf8")).toBe(original);
+  });
+
+  it("leaves local data untouched and cleans up when the request times out", async () => {
+    const outputPath = await fixture();
+    const original = JSON.stringify(makePayload(10));
+    await writeFile(outputPath, original);
+    await expect(syncTimetable({
+      endpoint: "https://example.test/exec",
+      outputPath,
+      timeoutMs: 25,
+      fetchImpl: async (_endpoint, options) => new Promise((_resolve, reject) => {
+        const signal = options?.signal;
+        if (!signal) { reject(new Error("Request signal is missing")); return; }
+        if (signal.aborted) reject(signal.reason);
+        else signal.addEventListener("abort", () => reject(signal.reason), { once: true });
+      }),
+    })).rejects.toThrow();
+    expect(await readFile(outputPath, "utf8")).toBe(original);
+    await expect(readdir(dirname(outputPath))).resolves.toEqual(["masjids.json"]);
   });
 
   it("does not replace the target when the atomic rename fails", async () => {
