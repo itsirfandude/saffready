@@ -1,5 +1,13 @@
 # Private timetable Sheet setup
 
+## Fixed-time confirmation columns
+
+In **Prayer Timings**, retain every existing column in its current order, including `handwritten_prayers` and `unclear_prayers`. Append the following 18 columns in this exact order, after those existing notes/provenance columns. Use the canonical repository spelling `dhuhr` for the prayer key (the user-facing prayer label remains unchanged); do not add `zuhr` columns or duplicate Dhuhr metadata columns. Leave every new metadata cell blank for existing rows:
+
+`fajr_fixed`, `fajr_fixed_basis`, `fajr_fixed_checked_on`, `dhuhr_fixed`, `dhuhr_fixed_basis`, `dhuhr_fixed_checked_on`, `asr_fixed`, `asr_fixed_basis`, `asr_fixed_checked_on`, `maghrib_fixed`, `maghrib_fixed_basis`, `maghrib_fixed_checked_on`, `isha_fixed`, `isha_fixed_basis`, `isha_fixed_checked_on`, `jumuah_fixed`, `jumuah_fixed_basis`, `jumuah_fixed_checked_on`.
+
+`fixed` accepts TRUE, FALSE, or blank. TRUE requires a written confirmation source in `fixed_basis` and a real `YYYY-MM-DD` verification date in `fixed_checked_on`. Never infer TRUE from repeated times or a photograph alone. A metadata-only edit publishes a new feed version but does not change `observed_on`, `updated_at`, or physical timing history. Jumu'ah Adhan and Iqamah may both be blank; if either is entered, both must be valid. The five daily prayer rows remain required.
+
 This folder contains the Apps Script JSON publisher and private verification action. It exposes only the intended masjid and timetable records. The spreadsheet and its edit access stay private. The public web app has one `doGet` path and cannot edit the spreadsheet.
 
 ## Create the mobile editing spreadsheet
@@ -23,7 +31,7 @@ For a physical check with no correction, use **SaffReady Admin → Verify unchan
 
 Do not paste multiple timetable cells as one bulk edit when relying on correction history or timestamps. This project has no reliable private before-edit snapshot, and Apps Script does not supply per-cell old values for multi-cell edits. The trigger therefore does not claim a correction, update `updated_at` / `observed_on`, or append correction history for such an edit; the sheet values may still appear in the published feed. Edit timetable cells one at a time so the trigger can verify each change. Supporting bulk edits correctly requires a separately designed and validated snapshot workflow.
 
-The first four tabs and all required columns are created in the specified order. `Masjids` has four extra optional fields at the end (`ishraq`, `sunrise`, `solar_noon`, `sunset`) to preserve separately posted observances such as Ummu Kulsum Azim's noticeboard values. `Prayer Timings` has two optional provenance fields at the end: `handwritten_prayers` and `unclear_prayers`, containing comma-separated prayer keys. These preserve the distinction between handwritten and unclear entries when a sheet dataset replaces the bundled snapshot.
+The first four tabs and all required columns are created in the specified order. `Masjids` has four extra optional fields at the end (`ishraq`, `sunrise`, `solar_noon`, `sunset`) to preserve separately posted observances such as Ummu Kulsum Azim's noticeboard values. `Prayer Timings` has two optional provenance fields (`handwritten_prayers`, `unclear_prayers`), containing comma-separated prayer keys, followed by the six prayers' three fixed-classification columns each.
 
 Maghrib columns are `maghrib_iqamah_type`, `maghrib_iqamah_time`, and `maghrib_iqamah_offset_min`:
 

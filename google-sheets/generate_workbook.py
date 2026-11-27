@@ -25,18 +25,21 @@ pr=wb.create_sheet('Prayer Timings'); prayers=['fajr','dhuhr','asr','maghrib','i
 ph=['masjid_id']
 for p in prayers:ph += [p+'_adhan',p+'_iqamah',p+'_iqamah_type',p+'_iqamah_offset_min']
 ph += ['timing_pattern','effective_from','updated_at','updated_by','notes']
+ph += ['handwritten_prayers','unclear_prayers']
+ph += [p+'_'+suffix for p in prayers for suffix in ['fixed','fixed_basis','fixed_checked_on']]
 pr.append(ph)
 for m in records:
  row=[m['id']]
  for p in prayers:
   x=next(y for y in m['prayers'] if y['prayer']==p); val=x['iqamah']; after=isinstance(val,dict)
   row += [x.get('adhan'),None if after else val,'after_adhan' if after else 'fixed',val.get('offsetMin',0) if after else None]
- row += ['fixed' if p=='jumuah' else m.get('timingPattern','unknown'),None,None,None,m.get('notes')]
+ row += ['fixed' if p=='jumuah' else m.get('timingPattern','unknown'),None,None,None,m.get('notes'),None,None]
+ row += [None,None,None]*len(prayers)
  pr.append(row)
 h=wb.create_sheet('Timing History');h.append(['masjid_id','prayer','field_changed','previous_value','new_value','changed_at','changed_by','reason'])
 s=wb.create_sheet('Settings');s.append(['key','value']);[s.append(x) for x in [('schema_version','1'),('data_version','1'),('timezone','Asia/Kolkata'),('service_area','Coimbatore'),('last_published_at','')]]
 r=wb.create_sheet('Read Me');
-for line in ['SaffReady timetable workbook','Masjids: identity, addresses, Maps links, coordinates and affiliation. Edit these only to correct directory data.','Prayer Timings: one row per masjid, canonical 24-hour HH:mm. Edit schedule cells on your phone. Jumuah timing_pattern is fixed for all 13.','For immediately after Maghrib Adhan set maghrib_iqamah_type=after_adhan, offset=0, and leave maghrib_iqamah_time blank. Never copy the Adhan time into Iqamah.','Timing History: append-only audit records. Do not edit or delete rows.','Settings: schema/version/timezone/service area and publisher timestamp. Do not edit metadata manually.','Phone update: Google Sheets app → Prayer Timings → find masjid_id → edit one cell → save. Apps Script trigger records edits; the app refreshes within about five minutes.','Publish: the installed read-only Apps Script endpoint publishes valid rows automatically. No deployment for time edits.','Restore: edit the cell back to its previous valid value. Keep the history row as the audit trail.']:r.append([line])
+for line in ['SaffReady timetable workbook','Masjids: identity, addresses, Maps links, coordinates and affiliation. Edit these only to correct directory data.','Prayer Timings: one row per masjid, canonical 24-hour HH:mm. Edit schedule cells on your phone. timing_pattern describes the schedule category and does not confirm unchanged timings.','For immediately after Maghrib Adhan set maghrib_iqamah_type=after_adhan, offset=0, and leave maghrib_iqamah_time blank. Never copy the Adhan time into Iqamah.','Fixed classification: each prayer has fixed, fixed_basis, and fixed_checked_on fields. TRUE requires direct confirmation and source/date; FALSE means known not fixed; blank means unknown. Do not infer fixed status from a photo or repeated times. The same rule applies to Jumuah.','Metadata-only fixed classification edits do not verify the physical prayer times and do not update observed_on or updated_at.','Timing History: append-only audit records. Do not edit or delete rows.','Settings: schema/version/timezone/service area and publisher timestamp. Do not edit metadata manually.','Phone update: Google Sheets app → Prayer Timings → find masjid_id → edit one cell → save. Apps Script trigger records edits; the app refreshes within about five minutes.','Publish: the installed read-only Apps Script endpoint publishes valid rows automatically. No deployment for time edits.','Restore: edit the cell back to its previous valid value. Keep the history row as the audit trail.']:r.append([line])
 for sh in wb.worksheets:
  sh.freeze_panes='A2';sh.auto_filter.ref=sh.dimensions
  for c in sh[1]:c.font=Font(bold=True,color='FFFFFF');c.fill=PatternFill('solid',fgColor='34445B')
