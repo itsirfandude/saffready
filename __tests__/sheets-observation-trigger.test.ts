@@ -21,7 +21,7 @@ function parseCsv(path: string): string[][] {
 }
 
 class MockSheet {
-  constructor(readonly name: string, readonly data: string[][]) {}
+  constructor(readonly name: string, public data: string[][]) {}
   getName() { return this.name; }
   getParent() { return spreadsheet; }
   getDataRange() { return { getDisplayValues: () => this.data.map((row) => [...row]) }; }
@@ -67,6 +67,8 @@ function loadScript() {
   runInNewContext(readFileSync("google-sheets/Code.gs", "utf8"), context);
   return { context, properties };
 }
+
+function column(sheet: MockSheet, header: string) { const index=sheet.data[0].indexOf(header); if(index<0)throw new Error(`Missing column ${header}`); return index+1; }
 
 function editEvent(sheet: MockSheet, row: number, col: number, oldValue?: string) {
   return { range: { getSheet: () => sheet, getRow: () => row, getColumn: () => col, getNumRows: () => 1, getNumColumns: () => 1 }, oldValue, value: sheet.data[row - 1][col - 1] };
@@ -203,4 +205,26 @@ describe("Apps Script observation updates", () => {
     expect(masjids.data).toEqual(duplicateRows);
     expect(history.data).toEqual(duplicateHistory);
   });
+
+
+  it("publishes fixed metadata for all six prayer categories", () => {
+    const { context } = loadScript(); const timings=sheets.get("Prayer Timings")!;
+    const row=timingData.findIndex((r)=>r[0]==="masjidus-salam")+1;
+    const values: Record<string,[string,string,string]> = {fajr:["TRUE","Confirmed by the Masjid Muazzin","2026-11-27"],dhuhr:["FALSE","Masjid confirmation","2026-11-27"],asr:["","",""],maghrib:["TRUE","Noticeboard","2026-11-26"],isha:["FALSE","Masjid confirmation","2026-11-25"],jumuah:["TRUE","Confirmed by the Jumu’ah Muazzin","2026-11-27"]};
+    for(const [prayer,[fixed,basis,date]] of Object.entries(values)) for(const [suffix,value] of [["fixed",fixed],["fixed_basis",basis],["fixed_checked_on",date]]) timings.data[row-1][column(timings,`${prayer}_${suffix}`)-1]=value;
+    const prayers=JSON.parse(context.doGet().text).masjids[0].prayers;
+    expect(prayers.find((p:any)=>p.prayer==="fajr")).toMatchObject({fixed:true,fixedBasis:"Confirmed by the Masjid Muazzin",fixedCheckedOn:"2026-11-27"});
+    expect(prayers.find((p:any)=>p.prayer==="dhuhr")).toMatchObject({fixed:false,fixedBasis:"Masjid confirmation",fixedCheckedOn:"2026-11-27"});
+    expect(prayers.find((p:any)=>p.prayer==="asr")).toMatchObject({fixed:null,fixedBasis:null,fixedCheckedOn:null});
+    expect(prayers.find((p:any)=>p.prayer==="maghrib")).toMatchObject({fixed:true,fixedBasis:"Noticeboard",fixedCheckedOn:"2026-11-26"});
+    expect(prayers.find((p:any)=>p.prayer==="isha")).toMatchObject({fixed:false,fixedBasis:"Masjid confirmation",fixedCheckedOn:"2026-11-25"});
+    expect(prayers.find((p:any)=>p.prayer==="jumuah")).toMatchObject({fixed:true,fixedBasis:"Confirmed by the Jumu’ah Muazzin",fixedCheckedOn:"2026-11-27"});
+  });
+  it("rejects TRUE fixed metadata without basis/date and rejects impossible dates", () => {
+    for(const [basis,date] of [["","2026-11-27"],["Masjid confirmation",""],["Masjid confirmation","2026-02-30"]]) {const {context}=loadScript();const prior=JSON.parse(context.doGet().text),t=sheets.get("Prayer Timings")!,r=timingData.findIndex(x=>x[0]==="masjidus-salam")+1;t.data[r-1][column(t,"fajr_fixed")-1]="TRUE";t.data[r-1][column(t,"fajr_fixed_basis")-1]=basis;t.data[r-1][column(t,"fajr_fixed_checked_on")-1]=date;const after=JSON.parse(context.doGet().text);expect(after.sourceStale).toBe(true);expect(after.masjids).toEqual(prior.masjids);}
+  });
+  it("accepts legacy timing rows without metadata headers", () => {const {context}=loadScript();const t=sheets.get("Prayer Timings")!;t.data=t.data.map(row=>row.slice(0,30));const response=JSON.parse(context.doGet().text);expect(response.sourceStale).toBe(false);expect(response.masjids[0].prayers.every((p:any)=>p.fixed===null&&p.fixedBasis===null&&p.fixedCheckedOn===null)).toBe(true);});
+  it("allows blank Jumu’ah timings and keeps the five daily prayers required", () => {const {context}=loadScript();const t=sheets.get("Prayer Timings")!,r=timingData.findIndex(x=>x[0]==="masjidus-salam")+1;for(const f of ["jumuah_adhan","jumuah_iqamah","jumuah_iqamah_type","jumuah_iqamah_offset_min"])t.data[r-1][column(t,f)-1]="";const response=JSON.parse(context.doGet().text),j=response.masjids[0].prayers.find((p:any)=>p.prayer==="jumuah");expect(j.adhan).toBeNull();expect(j.iqamah).toBeNull();});
+  it("publishes metadata-only edits without physical verification or timestamp changes", () => {const {context}=loadScript();const t=sheets.get("Prayer Timings")!,m=sheets.get("Masjids")!,r=timingData.findIndex(x=>x[0]==="masjidus-salam")+1,before=t.data[r-1][27],observed=m.data.find(x=>x[0]==="masjidus-salam")![10],c=column(t,"fajr_fixed");t.data[r-1][c-1]="FALSE";context.recordTimingHistory(editEvent(t,r,c,""));expect(t.data[r-1][27]).toBe(before);expect(m.data.find(x=>x[0]==="masjidus-salam")![10]).toBe(observed);expect(JSON.parse(context.doGet().text).masjids[0].prayers.find((x:any)=>x.prayer==="fajr").fixed).toBe(false);});
+
 });

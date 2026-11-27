@@ -3,13 +3,14 @@ const TABS = { masjids: 'Masjids', timings: 'Prayer Timings', history: 'Timing H
 const PRAYERS=['fajr','dhuhr','asr','maghrib','isha','jumuah'];
 const REQUIRED = {
   Masjids: ['id','name_en','name_ta','maps_name','affiliation','address','latitude','longitude','maps_url','active','observed_on','source','notes','ishraq','sunrise','solar_noon','sunset'],
-  'Prayer Timings': ['masjid_id',...PRAYERS.flatMap(p=>[p+'_adhan',p+'_iqamah',p+'_iqamah_type',p+'_iqamah_offset_min']),'timing_pattern','effective_from','updated_at','updated_by','notes','handwritten_prayers','unclear_prayers'],
+  'Prayer Timings': ['masjid_id',...PRAYERS.flatMap(p=>[p+'_adhan',p+'_iqamah',p+'_iqamah_type',p+'_iqamah_offset_min']),'timing_pattern','effective_from','updated_at','updated_by','notes','handwritten_prayers','unclear_prayers',...PRAYERS.flatMap(p=>[p+'_fixed',p+'_fixed_basis',p+'_fixed_checked_on'])],
   'Timing History': ['masjid_id','prayer','field_changed','previous_value','new_value','changed_at','changed_by','reason'],
   Settings: ['key','value']
 };
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 const VERIFIED_MASJID_FIELDS = ['name_en','name_ta'];
 const VERIFIED_TIMING_FIELDS = [...PRAYERS.flatMap(p=>[p+'_adhan',p+'_iqamah',p+'_iqamah_type',p+'_iqamah_offset_min']),'timing_pattern','effective_from','handwritten_prayers','unclear_prayers'];
+const FIXED_METADATA_FIELDS = PRAYERS.flatMap(p=>[p+'_fixed',p+'_fixed_basis',p+'_fixed_checked_on']);
 const PUBLISHED_MASJID_FIELDS = ['name_en','name_ta','maps_name','affiliation','address','latitude','longitude','maps_url','active','observed_on','source','notes','ishraq','sunrise','solar_noon','sunset'];
 function initializeSchema() {
   const ss=SpreadsheetApp.getActive();
@@ -27,7 +28,7 @@ function initializeSchema() {
   for(const prayer of PRAYERS){
     const adhan=timingHeaders.indexOf(prayer+'_adhan')+1, iqamah=timingHeaders.indexOf(prayer+'_iqamah')+1;
     const type=timingHeaders.indexOf(prayer+'_iqamah_type')+1, offset=timingHeaders.indexOf(prayer+'_iqamah_offset_min')+1;
-    for(const col of [adhan,iqamah]){const letter=String.fromCharCode(64+col);const rule=SpreadsheetApp.newDataValidation().requireFormulaSatisfied('=REGEXMATCH(TO_TEXT('+letter+'2),"^([01][0-9]|2[0-3]):[0-5][0-9]$")').setAllowInvalid(false).setHelpText('Enter HH:mm in 24-hour time.').build();timings.getRange(2,col,500,1).setNumberFormat('@').setDataValidation(rule);}
+    for(const col of [adhan,iqamah]){const letter=String.fromCharCode(64+col),condition=prayer==='jumuah'?'OR('+letter+'2="",REGEXMATCH(TO_TEXT('+letter+'2),"^([01][0-9]|2[0-3]):[0-5][0-9]$"))':'REGEXMATCH(TO_TEXT('+letter+'2),"^([01][0-9]|2[0-3]):[0-5][0-9]$")';const rule=SpreadsheetApp.newDataValidation().requireFormulaSatisfied('='+condition).setAllowInvalid(false).setHelpText(prayer==='jumuah'?'Enter HH:mm or leave both Jumu’ah times blank.':'Enter HH:mm in 24-hour time.').build();timings.getRange(2,col,500,1).setNumberFormat('@').setDataValidation(rule);}
     timings.getRange(2,offset,500,1).setNumberFormat('0').setDataValidation(SpreadsheetApp.newDataValidation().requireNumberBetween(0,120).setAllowInvalid(false).build());
     timings.getRange(2,type,500,1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(prayer==='maghrib'?['fixed','after_adhan']:['fixed'],true).setAllowInvalid(false).build());
   }
@@ -37,6 +38,12 @@ function initializeSchema() {
   timings.getRange('AA2:AA501').setDataValidation(SpreadsheetApp.newDataValidation().requireFormulaSatisfied('=OR(AA2="",REGEXMATCH(TO_TEXT(AA2),"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"))').setAllowInvalid(false).build());
   timings.getRange('Z2:Z501').setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['fixed','seasonal','variable','unknown'],true).setAllowInvalid(false).build());
   timings.getRange('AB2:AC501').setNumberFormat('@');
+  for(const prayer of PRAYERS){
+    const fixed=timingHeaders.indexOf(prayer+'_fixed')+1, checked=timingHeaders.indexOf(prayer+'_fixed_checked_on')+1;
+    const fixedLetter=columnLetter_(fixed), checkedLetter=columnLetter_(checked);
+    timings.getRange(2,fixed,500,1).setDataValidation(SpreadsheetApp.newDataValidation().requireFormulaSatisfied('=OR('+fixedLetter+'2="",UPPER(TO_TEXT('+fixedLetter+'2))="TRUE",UPPER(TO_TEXT('+fixedLetter+'2))="FALSE")').setAllowInvalid(false).setHelpText('Use TRUE, FALSE, or leave blank when not verified.').build());
+    timings.getRange(2,checked,500,1).setNumberFormat('@').setDataValidation(SpreadsheetApp.newDataValidation().requireFormulaSatisfied('=OR('+checkedLetter+'2="",REGEXMATCH(TO_TEXT('+checkedLetter+'2),"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"))').setAllowInvalid(false).setHelpText('Use YYYY-MM-DD or leave blank until verified.').build());
+  }
   const history=ss.getSheetByName(TABS.history); history.protect().setDescription('Append-only SaffReady timing history');
   settings.protect().setDescription('SaffReady schema and publication metadata');
   timings.getRange('AB:AC').protect().setDescription('Updated timestamp and editor are maintained by the on-edit script');
@@ -173,12 +180,22 @@ function buildDataset_() {
     const handwritten=new Set(String(t.handwritten_prayers||'').split(',').map(x=>x.trim()).filter(Boolean));
     const unclear=new Set(String(t.unclear_prayers||'').split(',').map(x=>x.trim()).filter(Boolean));
     const prayers = PRAYERS.map(p => {
-      const adhan = requiredTime_(t[p + '_adhan'], m.id + ' ' + p + ' adhan');
-      const type=String(t[p+'_iqamah_type']||'fixed');let iqamah;
-      if(type==='fixed'){if(String(t[p+'_iqamah_offset_min']||'').trim()!=='')throw new Error('Fixed offset must be blank: '+m.id+' '+p);iqamah=requiredTime_(t[p+'_iqamah'],m.id+' '+p+' iqamah')}
-      else if(type==='after_adhan'){if(p!=='maghrib'||String(t[p+'_iqamah']||'').trim()!=='')throw new Error('Only Maghrib may use blank-time after_adhan: '+m.id);const offset=Number(t[p+'_iqamah_offset_min']);if(!Number.isInteger(offset)||offset<0||offset>120)throw new Error('Invalid after-Adhan offset: '+m.id);iqamah={type:'after_adhan',offsetMin:offset}}
-      else throw new Error('Invalid Iqamah type: '+m.id+' '+p);
-      return { prayer:p, adhan, iqamah, timingPattern:p==='jumuah'?'fixed':undefined, observedOn:m.observed_on || null, effectiveFrom:t.effective_from || null, source:m.source || 'noticeboard_photo', handwritten:handwritten.has(p), unclear:unclear.has(p) };
+      const adhanRaw=String(t[p+'_adhan']||'').trim(), iqamahRaw=String(t[p+'_iqamah']||'').trim();
+      let adhan=null, iqamah=null;
+      if(p!=='jumuah'||adhanRaw||iqamahRaw){
+        adhan=requiredTime_(adhanRaw,m.id+' '+p+' adhan');
+        const type=String(t[p+'_iqamah_type']||'fixed');
+        if(type==='fixed'){if(String(t[p+'_iqamah_offset_min']||'').trim()!=='')throw new Error('Fixed offset must be blank: '+m.id+' '+p);iqamah=requiredTime_(iqamahRaw,m.id+' '+p+' iqamah')}
+        else if(type==='after_adhan'){if(p!=='maghrib'||iqamahRaw)throw new Error('Only Maghrib may use blank-time after_adhan: '+m.id);const offset=Number(t[p+'_iqamah_offset_min']);if(!Number.isInteger(offset)||offset<0||offset>120)throw new Error('Invalid after-Adhan offset: '+m.id);iqamah={type:'after_adhan',offsetMin:offset}}
+        else throw new Error('Invalid Iqamah type: '+m.id+' '+p);
+      }
+      const fixedRaw=String(t[p+'_fixed']||'').trim().toUpperCase();
+      if(fixedRaw!==''&&fixedRaw!=='TRUE'&&fixedRaw!=='FALSE')throw new Error('Invalid fixed value: '+m.id+' '+p);
+      const fixed=fixedRaw===''?null:fixedRaw==='TRUE', fixedBasis=String(t[p+'_fixed_basis']||'').trim()||null, fixedCheckedOn=String(t[p+'_fixed_checked_on']||'').trim()||null;
+      if(fixedCheckedOn&&!validDate_(fixedCheckedOn))throw new Error('Invalid fixed_checked_on date: '+m.id+' '+p);
+      if(fixed===true&&(!fixedBasis||!fixedCheckedOn))throw new Error('TRUE fixed status requires confirmation basis and checked date: '+m.id+' '+p);
+      if(p==='jumuah'&&fixed===true&&!adhan)throw new Error('Jumu’ah cannot be fixed when its timings are blank: '+m.id);
+      return { prayer:p, adhan, iqamah, timingPattern:p==='jumuah'?'fixed':undefined, observedOn:m.observed_on || null, effectiveFrom:t.effective_from || null, source:m.source || 'noticeboard_photo', handwritten:handwritten.has(p), unclear:unclear.has(p), fixed, fixedBasis, fixedCheckedOn };
     });
     const lat = m.latitude === '' ? null : Number(m.latitude), lng = m.longitude === '' ? null : Number(m.longitude);
     if ((lat === null) !== (lng === null) || (lat !== null && (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat)>90 || Math.abs(lng)>180))) throw new Error('Invalid coordinate pair for ' + m.id);
@@ -189,6 +206,8 @@ function buildDataset_() {
   return { version:setting.data_version || '1', publishedAt:setting.last_published_at || new Date().toISOString(), timezone:setting.timezone || 'Asia/Kolkata', masjids };
 }
 function requiredTime_(value, label) { const v=String(value || '').trim(); if (!TIME.test(v)) throw new Error('Missing or malformed HH:mm value: ' + label); return v; }
+function validDate_(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(String(value)))return false;const d=new Date(String(value)+'T00:00:00Z');return !isNaN(d.getTime())&&d.toISOString().slice(0,10)===value;}
+function columnLetter_(column){let letter='';while(column){const remainder=(column-1)%26;letter=String.fromCharCode(65+remainder)+letter;column=Math.floor((column-1)/26);}return letter;}
 function rows_(sheet) { if (!sheet) throw new Error('Missing sheet tab.'); const values=sheet.getDataRange().getDisplayValues(); if (!values.length) throw new Error('Missing header row in ' + sheet.getName()); const expected=REQUIRED[sheet.getName()]; if (!expected || values[0].length>expected.length || values[0].some((x,i)=>x!==expected[i])) throw new Error('Unexpected columns in ' + sheet.getName()); return values.slice(1).filter(r=>r.some(v=>v!=='')).map(row=>Object.fromEntries(expected.map((key,i)=>[key,row[i] || '']))); }
 function json_(value) { return ContentService.createTextOutput(JSON.stringify(value)).setMimeType(ContentService.MimeType.JSON); }
 
@@ -202,7 +221,7 @@ function recordTimingHistory(e) {
   const verifiedFields=tab===TABS.timings?VERIFIED_TIMING_FIELDS:VERIFIED_MASJID_FIELDS;
   const touchesVerifiedField=touched.some(field=>verifiedFields.includes(field));
   const masjidFields=tab===TABS.masjids?PUBLISHED_MASJID_FIELDS:[];
-  const timingFields=tab===TABS.timings?[...VERIFIED_TIMING_FIELDS,'updated_at']:[];
+  const timingFields=tab===TABS.timings?[...VERIFIED_TIMING_FIELDS,...FIXED_METADATA_FIELDS,'updated_at']:[];
   const isPublishedEdit=touched.some(field=>masjidFields.includes(field)||timingFields.includes(field));
   if (!isPublishedEdit) return;
 
