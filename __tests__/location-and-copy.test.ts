@@ -57,7 +57,7 @@ describe("timing copy and user-facing status", () => {
     expect(copy("salahStatus", "ta")).toBe("தொழுகை நிலை");
     expect(read("components/JamaatCard.tsx")).toContain('copy("ongoing", language)');
     expect(read("components/JamaatCard.tsx")).toContain('copy("salahStatus", language)');
-    expect(read("components/PrayerTimetable.tsx")).toContain('copy(status==="ongoing"?"ongoing":"endingSoon",language)');
+    expect(read("components/PrayerTimetable.tsx")).toContain('copy(status === "ongoing" ? "ongoing" : "endingSoon", language)');
   });
 
   it("suppresses only the source-stale warning while retaining source freshness state", () => {

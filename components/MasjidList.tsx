@@ -9,6 +9,7 @@ import { travelForMasjid } from "@/src/lib/travel";
 import { copy } from "@/src/constants/strings";
 import { formatDistance } from "@/src/lib/distance";
 import type { LocationState } from "@/src/lib/location";
+import { classifyJamaat } from "@/src/lib/scheduling";
 
 
 export function MasjidList({
@@ -81,8 +82,8 @@ export function MasjidList({
         const travel = location ? travelForMasjid(location, item.masjid) : null;
         if ("unavailable" in item) return <div key={item.masjid.id} className="ink-card min-w-0 rounded-xl px-3 py-3"><p className="break-words text-sm font-semibold">{item.masjid.name_en}</p><p className="jamaat-card-detail"><span className="jamaat-status-chip">{ta ? "நேரம் இல்லை" : "Unavailable"}</span><span>{ta ? "நடந்து செல்லும் தூரம் கிடைக்கவில்லை" : "Walking distance unavailable"}</span></p></div>;
         const key = `${item.masjid.id}:${item.prayer}:${item.time}`;
-        const elapsed = now.getTime() - item.at.getTime();
-        const status = elapsed >= 0 && elapsed <= 5 * 60_000 ? "ongoing" : elapsed > 5 * 60_000 && elapsed <= 10 * 60_000 ? "ending-soon" : "next";
+        const jamaatStatus = classifyJamaat(item.at, now);
+        const status = jamaatStatus === "ongoing" ? "ongoing" : jamaatStatus === "ending-soon" ? "ending-soon" : "next";
         return <div key={key} className="relative min-w-0"><JamaatCard item={item} status={status} now={now} timeFormat={timeFormat} travel={travel} locationState={locationState} />{travel ? <span className="distance-detail">{formatDistance(travel.adjustedDistanceKm)}</span> : locationState === "ready" ? <span className="distance-detail">{copy("travelUnavailable", language)}</span> : null}</div>;
       })}
     </section>}

@@ -171,7 +171,7 @@ export function ClientHome() {
   const entry = (item: typeof completed[number]) => {
     const record = item.masjid.prayers.find((prayer) => prayer.prayer === item.prayer);
     return <Link href={`/masjid/${item.masjid.id}`} key={`${item.masjid.id}-${item.prayer}-${item.time}`} className="flex items-center justify-between gap-3 border-b px-2 py-2.5 text-[var(--text-muted)] opacity-65 last:border-0">
-      <div className="min-w-0"><p className="truncate text-sm font-medium">{masjidName(item.masjid, language)}</p><p className="text-xs">{ta ? PRAYER_TA[item.prayer] : PRAYER_EN[item.prayer]} · {ta ? "முடிந்த இகாமத்" : "Completed Iqamah"}</p></div>
+      <div className="min-w-0"><p className="truncate text-sm font-medium">{masjidName(item.masjid, language)}</p><p className="text-xs">{ta ? PRAYER_TA[item.prayer] : PRAYER_EN[item.prayer]} · {copy("completedSalah", language)}</p></div>
       <div className="shrink-0 text-right"><p className="text-sm font-semibold">{record ? formatIqamahValue(record.iqamah, record.adhan, language, timeFormat) : formatTime(item.time, timeFormat)}</p></div>
     </Link>;
   };

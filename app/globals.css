@@ -32,7 +32,8 @@
 .distance-detail { display:block;margin:3px 6px 0;color:var(--text-muted);font-size:.76rem; }
 .jamaat-travel-missing { color:var(--text-muted);font-size:.76rem; }
 .prayer-fixed-row { background:color-mix(in srgb,#D4AF37 10%,var(--bg-card)); }
-.prayer-fixed-row.prayer-fixed-active-row { background:color-mix(in srgb,#D4AF37 14%,var(--bg-raised)); }
+.prayer-active-row { border:1px solid var(--accent-2);background:var(--bg-raised); }
+.prayer-fixed-row.prayer-active-row { background:color-mix(in srgb,#D4AF37 14%,var(--bg-raised)); }
 .prayer-fixed-star { margin-left:6px;color:#D4AF37;font-size:.78rem;line-height:1;vertical-align:middle; }
 .fixed-timings-disclaimer { margin-top:8px;max-width:100%;color:var(--text-muted);font-size:.72rem;line-height:1.5;overflow-wrap:anywhere; }
 @media(max-width:399px){.jamaat-card{padding:14px 15px}.jamaat-card-name{font-size:.96rem}.jamaat-card-detail{font-size:.78rem}.jamaat-iqamah-time{font-size:1.35rem}.jamaat-countdown{font-size:.84rem}.jamaat-card-meta{gap:10px;font-size:.7rem}}

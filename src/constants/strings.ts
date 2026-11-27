@@ -65,6 +65,7 @@ export const STRINGS = {
   ongoingContext: { en: "Salah ongoing", ta: "தொழுகை நடைபெறுகிறது" },
   endingSoonContext: { en: "Salah ending soon", ta: "தொழுகை முடிவடைய உள்ளது" },
   salahStatus: { en: "Salah status", ta: "தொழுகை நிலை" },
+  completedSalah: { en: "Salah completed", ta: "தொழுகை முடிந்தது" },
   timeRemaining: { en: "in {n} minutes", ta: "இன்னும் {n} நிமிடங்களில்" },
   aboutWalk: { en: "about {n} minute walk", ta: "சுமார் {n} நிமிட நடை" },
   aboutBike: { en: "about {n} minutes by bike", ta: "சுமார் {n} நிமிடம் பைக்கில்" },

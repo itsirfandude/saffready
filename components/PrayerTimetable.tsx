@@ -33,7 +33,7 @@ export function PrayerTimetable({
           const status = statusByPrayer[key];
           const active = isNext || Boolean(status);
           const fixed = record.fixed === true;
-          return <tr key={key} className={`${fixed ? (active ? "prayer-fixed-row prayer-fixed-active-row" : "prayer-fixed-row") : ""} ${active ? "border border-[var(--accent-2)] bg-[var(--bg-raised)]" : "border-t"}`}>
+          return <tr key={key} className={`${fixed ? "prayer-fixed-row" : ""} ${active ? "prayer-active-row" : "border-t"}`}>
             <th scope="row" className="p-2.5 font-normal">
               <span className={ta ? "font-tamil-text text-sm" : "text-sm"}>{ta ? PRAYER_TA[key] : PRAYER_EN[key]}</span>
               {fixed && <span className="prayer-fixed-star" role="img" aria-label={copy("fixedTimingIndicator", language)} title={copy("fixedTimingIndicator", language)}>★</span>}

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { JamaatCard } from "@/components/JamaatCard";
 import { NextIqamahHero } from "@/components/NextIqamahHero";
@@ -8,12 +8,16 @@ import type { Masjid } from "@/src/types/masjid";
 import type { DailyIqamah } from "@/src/lib/scheduling";
 import type { NextIqamah } from "@/src/lib/next-iqamah";
 
+const { getLanguage } = vi.hoisted(() => ({ getLanguage: vi.fn() }));
+vi.mock("@/components/PreferencesProvider", () => ({ usePreferences: () => ({ language: getLanguage() }) }));
+
 const masjid: Masjid = { id: "test-masjid", name_ta: null, name_en: "Long Community Masjid Name", address_ta: null, lat: 11, lng: 76, prayers: [{ prayer: "isha", adhan: "19:00", iqamah: "19:35", observedOn: null, effectiveFrom: null, source: "noticeboard_photo", handwritten: false, unclear: false }] };
 const at = new Date("2026-11-23T14:05:00Z");
 const ongoing: DailyIqamah = { masjid, prayer: "isha", time: "19:35", at };
 const next: NextIqamah = { ...ongoing, at: new Date(at.getTime() + 8 * 60_000 + 42_000), minutesRemaining: 9, tomorrow: false };
 
 describe("Jamaat cards", () => {
+  beforeEach(() => getLanguage.mockReturnValue("ta"));
   it("shows a concise minute countdown and accessible walking information", () => {
     const html = renderToStaticMarkup(<JamaatCard item={next} status="next" now={at} timeFormat="12h" travel={{ distanceKm: .3, adjustedDistanceKm: .39, walkMinutes: 5, bikeMinutes: 2, mode: "walk", minutes: 5 }} />);
     expect(html).toContain("9 min");
@@ -128,5 +132,21 @@ describe("Jamaat cards", () => {
     const withoutLocation = renderToStaticMarkup(<NextIqamahHero next={next} timeFormat="12h" />);
     expect(withoutLocation).not.toContain("Walking details unavailable");
     expect(withoutLocation).not.toContain("நடை நேரம் கிடைக்கவில்லை");
+  });
+
+  it("shows one contextual Salah status in the hero and compact badge plus Salah status on cards", () => {
+    const card=renderToStaticMarkup(<JamaatCard item={ongoing} status="ongoing" now={at} timeFormat="12h" travel={null}/>);
+    const hero=renderToStaticMarkup(<NextIqamahHero next={next} timeFormat="12h" status="ongoing"/>);
+    expect(card).toContain("நடைபெறுகிறது");expect(card).toContain("தொழுகை நிலை");
+    expect(hero.match(/தொழுகை நடைபெறுகிறது/g)).toHaveLength(1);
+  });
+
+  it("keeps immediate-after-Adhan prayer in ongoing status with no redundant countdown", () => {
+    getLanguage.mockReturnValue("en");
+    const immediateMasjid={...masjid,prayers:[{...masjid.prayers[0],prayer:"maghrib" as const,adhan:"17:55",iqamah:{type:"after_adhan" as const,offsetMin:0}}]};
+    const immediateAt=new Date("2026-11-21T12:25:00Z");
+    const active:DailyIqamah={masjid:immediateMasjid,prayer:"maghrib",time:"17:55",at:immediateAt,immediate:true};
+    const card=renderToStaticMarkup(<JamaatCard item={active} status="ongoing" now={new Date(immediateAt.getTime()+1_000)} timeFormat="12h" travel={null}/>);
+    expect(card).toContain("jamaat-status-chip");expect(card).toContain("Salah status");expect(card).not.toContain("Until Adhan");expect(card).not.toContain("Until Iqamah");
   });
 });
