@@ -7,7 +7,7 @@ const { getLiveTimetableMock, usePreferencesMock } = vi.hoisted(() => ({
   usePreferencesMock: vi.fn(),
 }));
 
-vi.mock("@/src/lib/server-timetable", () => ({ getLiveTimetable: getLiveTimetableMock }));
+vi.mock("@/src/lib/server-timetable", () => ({ getLiveTimetable: getLiveTimetableMock, getTimetableWithFallback: getLiveTimetableMock }));
 vi.mock("next/navigation", () => ({ notFound: () => { throw new Error("NEXT_NOT_FOUND"); } }));
 vi.mock("@/components/PreferencesProvider", () => ({ usePreferences: usePreferencesMock }));
 

@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { isTimetableFeedStale, TIMETABLE_SERVER_REVALIDATE_SECONDS } from "@/src/lib/timetable-cache";
 import { validateMasjids } from "@/src/lib/validation";
 import type { Masjid } from "@/src/types/masjid";
+import snapshot from "@/data/masjids.json";
 
 export type LiveTimetable = {
   [key: string]: unknown;
@@ -37,4 +38,17 @@ export async function getLiveTimetable(endpoint = process.env.SHEETS_JSON_URL): 
     publishedAt: cached.data.publishedAt as string,
     sourceStale: isTimetableFeedStale(cached.data.sourceStale, cached.fetchedAt),
   };
+}
+
+/** Shared server-side source policy used by the API and detail routes. */
+export async function getTimetableWithFallback(endpoint = process.env.SHEETS_JSON_URL): Promise<LiveTimetable> {
+  try {
+    return await getLiveTimetable(endpoint);
+  } catch {
+    const fallback = snapshot as LiveTimetable;
+    if (!validateMasjids(fallback.masjids) || typeof fallback.publishedAt !== "string") {
+      throw new Error("No valid live timetable or bundled snapshot is available");
+    }
+    return { ...fallback, sourceStale: true };
+  }
 }
