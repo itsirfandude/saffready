@@ -90,6 +90,7 @@ function classifyPublisherFailure_(err) {
   if(exact[message])return exact[message];
   if(message.startsWith('observed_on must be YYYY-MM-DD'))return 'INVALID_OBSERVED_ON_FORMAT';
   if(message.startsWith('effective_from must be YYYY-MM-DD'))return 'INVALID_EFFECTIVE_FROM_FORMAT';
+  if(message.startsWith('Invalid timetable value for '))return 'INVALID_TIMETABLE_VALUE';
   if(message.startsWith('Missing or malformed HH:mm value: '))return 'MISSING_OR_INVALID_PRAYER_TIME';
   if(message.startsWith('Missing Prayer Timings row for '))return 'MISSING_TIMING_ROW';
   if(message.startsWith('Invalid timing_pattern for '))return 'INVALID_TIMING_PATTERN';
@@ -164,48 +165,74 @@ function buildDataset_() {
   if (!mRows.length || !tRows.length) throw new Error('Required rows are missing. Empty cells never delete existing records; fill every required field before publishing.');
   const activeRows=mRows.filter(r=>String(r.active).toLowerCase()!=='false');
   const allIds=new Set(mRows.map(r=>String(r.id)));
-  if(allIds.size!==mRows.length)throw new Error('Duplicate masjid id in Masjids.');
+  if(allIds.size!==mRows.length){const seen=new Set();const duplicate=mRows.find(row=>{const key=String(row.id);if(seen.has(key))return true;seen.add(key);return false;});throw new Error('Invalid timetable value for '+(duplicate.name_en||'Unknown Masjid')+' ('+duplicate.id+'), field id, value "'+duplicate.id+'"; expected a unique Masjid ID.');}
   if(!activeRows.length)throw new Error('At least one active masjid is required.');
   const timings = new Map(tRows.map(r => [String(r.masjid_id), r]));
-  if (timings.size !== tRows.length) throw new Error('Duplicate masjid_id in Prayer Timings.');
-  if(tRows.some(r=>!allIds.has(String(r.masjid_id))))throw new Error('Orphan Prayer Timings row; every timing row must match a masjid.');
+  if (timings.size !== tRows.length){const seen=new Set();const duplicate=tRows.find(row=>{const key=String(row.masjid_id);if(seen.has(key))return true;seen.add(key);return false;});throw new Error('Invalid timetable value for '+(mRows.find(row=>String(row.id)===String(duplicate.masjid_id))?.name_en||'Unknown Masjid')+' ('+duplicate.masjid_id+'), field masjid_id, value "'+duplicate.masjid_id+'"; expected exactly one Prayer Timings row per Masjid.');}
+  const orphan=tRows.find(r=>!allIds.has(String(r.masjid_id)));
+  if(orphan)throw new Error('Invalid timetable value for Unknown Masjid ('+orphan.masjid_id+'), field masjid_id, value "'+orphan.masjid_id+'"; expected an ID present in the Masjids sheet.');
+  const warnings=[];
+  const previous=JSON.parse(PropertiesService.getScriptProperties().getProperty('LAST_VALID_DATASET')||'{"masjids":[]}');
+  const previousById=new Map((previous.masjids||[]).map(m=>[String(m.id),m]));
   const masjids = activeRows.map(m => {
-    if(!m.id||!m.name_en)throw new Error('Masjid id and English name are required. Leave an unverified Tamil name blank.');
-    if(m.observed_on&&!/^\d{4}-\d{2}-\d{2}$/.test(m.observed_on))throw new Error('observed_on must be YYYY-MM-DD for '+m.id);
+    if(!m.id||!m.name_en)throw new Error('Invalid timetable value for '+(m.name_en||'Unknown Masjid')+' ('+(m.id||'missing ID')+'), field id/name_en, value "'+(m.id||m.name_en||'')+'"; expected a Masjid ID and English name.');
+    if(m.observed_on&&!validDate_(m.observed_on))throw new Error('Invalid timetable value for '+m.name_en+' ('+m.id+'), field observed_on, value "'+m.observed_on+'"; expected a real date in YYYY-MM-DD format.');
     const t = timings.get(String(m.id));
-    if (!t) throw new Error('Missing Prayer Timings row for ' + m.id);
+    if (!t) throw new Error('Invalid timetable value for '+m.name_en+' ('+m.id+'), field masjid_id, value ""; expected one matching Prayer Timings row.');
     const pattern = t.timing_pattern || 'unknown';
     if (!['fixed','seasonal','variable','unknown'].includes(pattern)) throw new Error('Invalid timing_pattern for ' + m.id);
-    if(t.effective_from&&!/^\d{4}-\d{2}-\d{2}$/.test(t.effective_from))throw new Error('effective_from must be YYYY-MM-DD for '+m.id);
+    if(t.effective_from&&!validDate_(t.effective_from))throw new Error('Invalid timetable value for '+m.name_en+' ('+m.id+'), field effective_from, value "'+t.effective_from+'"; expected a real date in YYYY-MM-DD format.');
     const handwritten=new Set(String(t.handwritten_prayers||'').split(',').map(x=>x.trim()).filter(Boolean));
     const unclear=new Set(String(t.unclear_prayers||'').split(',').map(x=>x.trim()).filter(Boolean));
     const prayers = PRAYERS.map(p => {
+      const label=m.name_en+' ('+m.id+'), prayer '+p;
       const adhanRaw=String(t[p+'_adhan']||'').trim(), iqamahRaw=String(t[p+'_iqamah']||'').trim();
       let adhan=null, iqamah=null;
       if(p!=='jumuah'||adhanRaw||iqamahRaw){
-        adhan=requiredTime_(adhanRaw,m.id+' '+p+' adhan');
+        adhan=requiredTime_(adhanRaw,label,'adhan');
         const type=String(t[p+'_iqamah_type']||'fixed');
-        if(type==='fixed'){if(String(t[p+'_iqamah_offset_min']||'').trim()!=='')throw new Error('Fixed offset must be blank: '+m.id+' '+p);iqamah=requiredTime_(iqamahRaw,m.id+' '+p+' iqamah')}
-        else if(type==='after_adhan'){if(p!=='maghrib'||iqamahRaw)throw new Error('Only Maghrib may use blank-time after_adhan: '+m.id);const offset=Number(t[p+'_iqamah_offset_min']);if(!Number.isInteger(offset)||offset<0||offset>120)throw new Error('Invalid after-Adhan offset: '+m.id);iqamah={type:'after_adhan',offsetMin:offset}}
-        else throw new Error('Invalid Iqamah type: '+m.id+' '+p);
+        if(type==='fixed'){
+          if(String(t[p+'_iqamah_offset_min']||'').trim()!=='')invalidValue_(label,'iqamah_offset_min',t[p+'_iqamah_offset_min'],'blank when iqamah_type is fixed');
+          iqamah=requiredTime_(iqamahRaw,label,'iqamah');
+          if(minutes_(iqamah)<minutes_(adhan)&&minutes_(iqamah)+1440-minutes_(adhan)>120)invalidValue_(label,'iqamah',iqamah,'at or after Adhan, or within 120 minutes after midnight');
+        } else if(type==='after_adhan'){
+          if(p!=='maghrib'||iqamahRaw)invalidValue_(label,'iqamah_type',type,'after_adhan only for Maghrib with a blank iqamah time');
+          const raw=String(t[p+'_iqamah_offset_min']||'').trim(), offset=Number(raw);
+          if(raw===''||!Number.isInteger(offset)||offset<0||offset>120)invalidValue_(label,'iqamah_offset_min',raw,'an integer from 0 through 120');
+          iqamah={type:'after_adhan',offsetMin:offset};
+        } else invalidValue_(label,'iqamah_type',type,'fixed, or after_adhan for Maghrib');
       }
       const fixedRaw=String(t[p+'_fixed']||'').trim().toUpperCase();
-      if(fixedRaw!==''&&fixedRaw!=='TRUE'&&fixedRaw!=='FALSE')throw new Error('Invalid fixed value: '+m.id+' '+p);
-      const fixed=fixedRaw===''?null:fixedRaw==='TRUE', fixedBasis=String(t[p+'_fixed_basis']||'').trim()||null, fixedCheckedOn=String(t[p+'_fixed_checked_on']||'').trim()||null;
-      if(fixedCheckedOn&&!validDate_(fixedCheckedOn))throw new Error('Invalid fixed_checked_on date: '+m.id+' '+p);
-      if(fixed===true&&(!fixedBasis||!fixedCheckedOn))throw new Error('TRUE fixed status requires confirmation basis and checked date: '+m.id+' '+p);
-      if(p==='jumuah'&&fixed===true&&!adhan)throw new Error('Jumu’ah cannot be fixed when its timings are blank: '+m.id);
+      if(fixedRaw!==''&&fixedRaw!=='TRUE'&&fixedRaw!=='FALSE')invalidValue_(label,'fixed',t[p+'_fixed'],'TRUE, FALSE, or blank when unknown');
+      const fixed=fixedRaw===''?null:fixedRaw==='TRUE';
+      const fixedBasis=String(t[p+'_fixed_basis']||'').trim()||null;
+      const fixedCheckedOn=String(t[p+'_fixed_checked_on']||'').trim()||null;
+      if(fixedCheckedOn&&!validDate_(fixedCheckedOn))invalidValue_(label,'fixed_checked_on',fixedCheckedOn,'a real date in YYYY-MM-DD format');
+      if(fixed===true&&(!fixedBasis||!fixedCheckedOn))invalidValue_(label,'fixed/fixed_basis/fixed_checked_on',[fixedRaw,fixedBasis,fixedCheckedOn],'TRUE requires a confirmation source and verification date');
+      if(p==='jumuah'&&fixed===true&&!adhan)invalidValue_(label,'adhan/iqamah/fixed','TRUE with blank Jumuah timings','complete Jumuah Adhan and Iqamah values before confirming fixed status');
+      const old=(previousById.get(String(m.id))?.prayers||[]).find(x=>x.prayer===p);
+      if(old&&adhan&&old.adhan&&Math.abs(timeDelta_(adhan,old.adhan))>15)warnings.push('Timing changed by more than 15 minutes: '+label+' adhan ('+old.adhan+' → '+adhan+'). Verify the source.');
+      const oldIqamah=old&&resolvedIqamah_(old.iqamah,old.adhan);
+      const currentIqamah=resolvedIqamah_(iqamah,adhan);
+      if(oldIqamah&&currentIqamah&&Math.abs(timeDelta_(currentIqamah,oldIqamah))>15)warnings.push('Timing changed by more than 15 minutes: '+label+' iqamah ('+oldIqamah+' → '+currentIqamah+'). Verify the source.');
+      if(adhan&&currentIqamah&&minutes_(currentIqamah)-minutes_(adhan)>120)warnings.push('Unusually long Adhan-to-Iqamah interval: '+label+' ('+Math.round((minutes_(currentIqamah)-minutes_(adhan))/60)+' hours). Verify the source.');
+      if(p==='maghrib'&&adhan&&m.sunset&&TIME.test(m.sunset)){const delta=minutes_(adhan)-minutes_(m.sunset);if(delta < -10||delta>60)warnings.push('Maghrib Adhan differs from the recorded local sunset by '+delta+' minutes for '+label+'. Local and seasonal variation is expected; please verify the noticeboard and sunset value.');}
       return { prayer:p, adhan, iqamah, timingPattern:p==='jumuah'?'fixed':undefined, observedOn:m.observed_on || null, effectiveFrom:t.effective_from || null, source:m.source || 'noticeboard_photo', handwritten:handwritten.has(p), unclear:unclear.has(p), fixed, fixedBasis, fixedCheckedOn };
     });
     const lat = m.latitude === '' ? null : Number(m.latitude), lng = m.longitude === '' ? null : Number(m.longitude);
     if ((lat === null) !== (lng === null) || (lat !== null && (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat)>90 || Math.abs(lng)>180))) throw new Error('Invalid coordinate pair for ' + m.id);
-    const extra=[['Ishraq','இஷ்ராக்',m.ishraq],['Sunrise','சூரிய உதயம்',m.sunrise],['Solar noon','நண்பகல்',m.solar_noon],['Sunset','சூரிய அஸ்தமனம்',m.sunset]].filter(x=>x[2]).map(x=>({name_en:x[0],name_ta:x[1],time:requiredTime_(x[2],String(m.id)+' '+x[0])}));
+    const extra=[['Ishraq','இஷ்ராக்',m.ishraq],['Sunrise','சூரிய உதயம்',m.sunrise],['Solar noon','நண்பகல்',m.solar_noon],['Sunset','சூரிய அஸ்தமனம்',m.sunset]].filter(x=>x[2]).map(x=>({name_en:x[0],name_ta:x[1],time:requiredTime_(x[2],m.name_en+' ('+m.id+'), field '+x[0],'time')}));
     return { id:String(m.id), name_en:String(m.name_en), name_ta:m.name_ta || null, mapsName:m.maps_name || null, affiliation:m.affiliation || null, address_ta:m.address || null, lat,lng,mapsUrl:m.maps_url || null, active:true, observedOn:m.observed_on || null, source:m.source || 'noticeboard_photo', notes:m.notes || null, timingPattern:pattern, updatedAt:t.updated_at || null, prayers, additionalObservances:extra };
   });
   if (masjids.length !== activeRows.length) throw new Error('Dataset record count mismatch.');
-  return { version:setting.data_version || '1', publishedAt:setting.last_published_at || new Date().toISOString(), timezone:setting.timezone || 'Asia/Kolkata', masjids };
+  warnings.forEach(w=>console.warn('SaffReady publisher warning: '+w));
+  return { version:setting.data_version || '1', publishedAt:setting.last_published_at || new Date().toISOString(), timezone:setting.timezone || 'Asia/Kolkata', masjids, validationWarnings:warnings };
 }
-function requiredTime_(value, label) { const v=String(value || '').trim(); if (!TIME.test(v)) throw new Error('Missing or malformed HH:mm value: ' + label); return v; }
+function requiredTime_(value, label, field) { const v=String(value || '').trim(); if (!TIME.test(v)) invalidValue_(label,field||'time',v,'a required 24-hour HH:mm time'); return v; }
+function invalidValue_(label,field,value,expected){throw new Error('Invalid timetable value for '+label+', field '+field+', value "'+String(value)+'"; expected '+expected+'.');}
+function minutes_(value){const parts=String(value).split(':').map(Number);return parts[0]*60+parts[1];}
+function timeDelta_(a,b){const delta=minutes_(a)-minutes_(b);return Math.sign(delta)*Math.min(Math.abs(delta),1440-Math.abs(delta));}
+function resolvedIqamah_(value,adhan){if(typeof value==='string'&&TIME.test(value))return value;if(value&&typeof value==='object'&&value.type==='after_adhan'&&TIME.test(adhan||'')){const total=minutes_(adhan)+value.offsetMin;return ('0'+Math.floor((total%1440)/60)).slice(-2)+':'+('0'+(total%60)).slice(-2);}return null;}
 function validDate_(value){if(!/^\d{4}-\d{2}-\d{2}$/.test(String(value)))return false;const d=new Date(String(value)+'T00:00:00Z');return !isNaN(d.getTime())&&d.toISOString().slice(0,10)===value;}
 function columnLetter_(column){let letter='';while(column){const remainder=(column-1)%26;letter=String.fromCharCode(65+remainder)+letter;column=Math.floor((column-1)/26);}return letter;}
 function rows_(sheet) { if (!sheet) throw new Error('Missing sheet tab.'); const values=sheet.getDataRange().getDisplayValues(); if (!values.length) throw new Error('Missing header row in ' + sheet.getName()); const expected=REQUIRED[sheet.getName()]; if (!expected || values[0].length>expected.length || values[0].some((x,i)=>x!==expected[i])) throw new Error('Unexpected columns in ' + sheet.getName()); return values.slice(1).filter(r=>r.some(v=>v!=='')).map(row=>Object.fromEntries(expected.map((key,i)=>[key,row[i] || '']))); }

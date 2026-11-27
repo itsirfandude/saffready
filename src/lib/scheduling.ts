@@ -19,9 +19,16 @@ export function resolveIqamah(record: Pick<Masjid["prayers"][number], "iqamah" |
   return `${String(Math.floor(minutes/60)).padStart(2,"0")}:${String(minutes%60).padStart(2,"0")}`;
 }
 export function iqamahDayOffset(record: Pick<Masjid["prayers"][number], "iqamah" | "adhan">): number {
-  if (!record.iqamah || typeof record.iqamah === "string" || record.iqamah.type !== "after_adhan" || !record.adhan || !/^([01]\d|2[0-3]):[0-5]\d$/.test(record.adhan)) return 0;
+  if (!record.adhan || !/^([01]\d|2[0-3]):[0-5]\d$/.test(record.adhan)) return 0;
   const [hour, minute] = record.adhan.split(":").map(Number);
-  return hour * 60 + minute + record.iqamah.offsetMin >= 1440 ? 1 : 0;
+  const adhanMinutes = hour * 60 + minute;
+  if (typeof record.iqamah === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(record.iqamah)) {
+    const [iqamahHour, iqamahMinute] = record.iqamah.split(":").map(Number);
+    const iqamahMinutes = iqamahHour * 60 + iqamahMinute;
+    return iqamahMinutes < adhanMinutes && iqamahMinutes + 1440 - adhanMinutes <= 120 ? 1 : 0;
+  }
+  if (!record.iqamah || typeof record.iqamah === "string" || record.iqamah.type !== "after_adhan") return 0;
+  return adhanMinutes + record.iqamah.offsetMin >= 1440 ? 1 : 0;
 }
 export function getDailyIqamahs(masjids: Masjid[], now = new Date()) {
   const parts = new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Kolkata",year:"numeric",month:"numeric",day:"numeric",hour:"numeric",minute:"numeric",second:"numeric",hour12:false}).formatToParts(now);
