@@ -1,6 +1,6 @@
 {
-  "version": "81",
-  "publishedAt": "2026-11-25T14:40:08.741Z",
+  "version": "144",
+  "publishedAt": "2026-11-27T10:56:06.213Z",
   "timezone": "Asia/Kolkata",
   "masjids": [
     {
@@ -9,77 +9,95 @@
       "name_ta": "மஸ்ஜிதுஸ் ஸலாம்",
       "mapsName": null,
       "affiliation": "TNTJ",
-      "address_ta": "Ponvizha Nagar.",
+      "address_ta": "Ponvizha Nagar ,Ukkadam",
       "lat": 10.9805512,
       "lng": 76.9691124,
       "mapsUrl": "https://maps.app.goo.gl/zy4ecehZQHkNagYN8",
       "active": true,
-      "observedOn": "2026-11-24",
+      "observedOn": "2026-11-27",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": "2026-11-24T06:27:11.121Z",
+      "updatedAt": "2026-11-27T00:45:41.405Z",
       "prayers": [
         {
           "prayer": "fajr",
-          "adhan": "05:07",
-          "iqamah": "05:25",
-          "observedOn": "2026-11-24",
+          "adhan": "05:09",
+          "iqamah": "05:30",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
           "adhan": "12:10",
           "iqamah": "12:30",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
           "adhan": "15:30",
           "iqamah": "15:45",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
           "adhan": "17:55",
           "iqamah": "18:03",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
           "adhan": "19:10",
           "iqamah": "19:30",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
           "adhan": "12:40",
           "iqamah": "13:10",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -90,7 +108,7 @@
       "name_ta": "மஸ்ஜித் மாலிக்குல் முல்க்",
       "mapsName": null,
       "affiliation": "JAQH",
-      "address_ta": "Anbu Nagar 7th Street.",
+      "address_ta": "Anbu Nagar 7th Street,Ukkadam",
       "lat": 10.9819627,
       "lng": 76.9715395,
       "mapsUrl": "https://maps.app.goo.gl/UUoAt8bymZvXCXR86",
@@ -109,7 +127,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
@@ -119,7 +140,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
@@ -129,7 +153,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
@@ -139,7 +166,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
@@ -149,7 +179,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
@@ -160,7 +193,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -171,7 +207,7 @@
       "name_ta": "மஸ்ஜிதுல் குத்தூஸ்",
       "mapsName": null,
       "affiliation": "YMJ",
-      "address_ta": "Anbu Nagar 9th Street, Rose Garden.",
+      "address_ta": "Anbu Nagar 9th Street, Rose Garden,Ukkadam",
       "lat": 10.9812419,
       "lng": 76.9732471,
       "mapsUrl": "https://maps.app.goo.gl/5wsDRYCpypxCj6LY7",
@@ -190,7 +226,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
@@ -200,7 +239,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
@@ -210,7 +252,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
@@ -220,7 +265,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
@@ -230,7 +278,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
@@ -241,7 +292,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -251,81 +305,96 @@
       "name_en": "Masjidul Mu'mineen",
       "name_ta": "மஸ்ஜிதுல் முஃமினீன்",
       "mapsName": null,
-      "affiliation": "SUNNAT JAMAAT",
+      "affiliation": "Sunnat Jamaat",
       "address_ta": "Ponvizha Nagar, South Ukkadam",
       "lat": 10.9814676,
       "lng": 76.9679835,
       "mapsUrl": "https://maps.app.goo.gl/6VuPpBrTYkavoe218",
       "active": true,
-      "observedOn": "2026-11-21",
+      "observedOn": "2026-11-25",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": null,
+      "updatedAt": "2026-11-25T11:43:27.461Z",
       "prayers": [
         {
           "prayer": "fajr",
-          "adhan": "04:59",
-          "iqamah": "05:40",
-          "observedOn": "2026-11-21",
+          "adhan": "05:05",
+          "iqamah": "05:45",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
           "adhan": "12:40",
           "iqamah": "13:15",
-          "observedOn": "2026-11-21",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
-          "adhan": "16:21",
+          "adhan": "16:20",
           "iqamah": "16:40",
-          "observedOn": "2026-11-21",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
-          "adhan": "18:04",
-          "iqamah": {
-            "type": "after_adhan",
-            "offsetMin": 0
-          },
-          "observedOn": "2026-11-21",
+          "adhan": "18:03",
+          "iqamah": "18:06",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
           "adhan": "19:25",
           "iqamah": "20:15",
-          "observedOn": "2026-11-21",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
           "adhan": "12:40",
           "iqamah": "13:30",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-21",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -336,77 +405,95 @@
       "name_ta": "மஸ்ஜித் அரஃபா",
       "mapsName": null,
       "affiliation": null,
-      "address_ta": "Kayidemillath Colony, Rose Garden.",
+      "address_ta": "Kayidemillath Colony, Rose Garden,Ukkadam",
       "lat": 10.9812245,
       "lng": 76.9743374,
       "mapsUrl": "https://maps.app.goo.gl/44tZKaJHMPJmRpSU9",
       "active": true,
-      "observedOn": "2026-11-24",
+      "observedOn": "2026-11-26",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": "2026-11-24T12:48:38.630Z",
+      "updatedAt": "2026-11-26T00:21:34.146Z",
       "prayers": [
         {
           "prayer": "fajr",
           "adhan": "05:07",
           "iqamah": "05:37",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
           "adhan": "13:00",
           "iqamah": "13:15",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
           "adhan": "16:00",
           "iqamah": "16:15",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
           "adhan": "17:55",
           "iqamah": "18:02",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
           "adhan": "20:15",
           "iqamah": "20:30",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
           "adhan": "12:55",
           "iqamah": "13:30",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -422,72 +509,90 @@
       "lng": 76.9678716,
       "mapsUrl": "https://maps.app.goo.gl/9EUmG8RdZZhn2RnK7",
       "active": true,
-      "observedOn": "2026-11-21",
+      "observedOn": "2026-11-26",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": null,
+      "updatedAt": "2026-11-26T00:22:14.719Z",
       "prayers": [
         {
           "prayer": "fajr",
-          "adhan": "05:06",
-          "iqamah": "05:26",
-          "observedOn": "2026-11-21",
+          "adhan": "05:08",
+          "iqamah": "05:28",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
           "adhan": "12:45",
           "iqamah": "13:00",
-          "observedOn": "2026-11-21",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
           "adhan": "16:00",
           "iqamah": "16:15",
-          "observedOn": "2026-11-21",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
-          "adhan": "17:55",
-          "iqamah": "18:02",
-          "observedOn": "2026-11-21",
+          "adhan": "17:56",
+          "iqamah": "18:03",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
           "adhan": "20:00",
           "iqamah": "20:15",
-          "observedOn": "2026-11-21",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
           "adhan": "12:50",
           "iqamah": "13:20",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-21",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -517,7 +622,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
@@ -527,7 +635,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
@@ -537,7 +648,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
@@ -547,7 +661,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
@@ -557,7 +674,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
@@ -568,7 +688,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -578,81 +701,96 @@
       "name_en": "Masjid Aamina Binth Wahab",
       "name_ta": "மஸ்ஜித் ஆமினா பிந்த் வஹாப்",
       "mapsName": null,
-      "affiliation": "SUNNAT JAMAAT",
-      "address_ta": "Al-Ameen Colony, Bilal Nagar, Pulian Thoppu",
+      "affiliation": "Sunnat Jamaat",
+      "address_ta": "Al-Ameen Colony, Bilal Nagar, Pulian Thoppu,Ukkadam",
       "lat": 10.9820556,
       "lng": 76.9633383,
       "mapsUrl": "https://maps.app.goo.gl/K7WgScaosTc3nSfg8",
       "active": true,
-      "observedOn": "2026-11-23",
+      "observedOn": "2026-11-25",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": null,
+      "updatedAt": "2026-11-25T13:19:37.519Z",
       "prayers": [
         {
           "prayer": "fajr",
           "adhan": "05:00",
           "iqamah": "05:40",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
           "adhan": "12:45",
           "iqamah": "13:15",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
           "adhan": "16:20",
           "iqamah": "16:40",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
           "adhan": "18:04",
-          "iqamah": {
-            "type": "after_adhan",
-            "offsetMin": 0
-          },
-          "observedOn": "2026-11-23",
+          "iqamah": "18:07",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
           "adhan": "20:00",
           "iqamah": "20:30",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
           "adhan": "12:45",
           "iqamah": "13:30",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -662,8 +800,8 @@
       "name_en": "Masjid Ummu Kulsum Azim",
       "name_ta": "மஸ்ஜித் உம்மு குல்சும் அஜீம்",
       "mapsName": null,
-      "affiliation": "AHLE HADEES",
-      "address_ta": "51, J.K. Garden, Sungam to Ukkadam Bypass Road, Coimbatore - 641001",
+      "affiliation": "Ahle Hadees",
+      "address_ta": "51, J.K. Garden, Sungam to Ukkadam Bypass Road",
       "lat": 10.9875541,
       "lng": 76.967661,
       "mapsUrl": "https://maps.app.goo.gl/ax8NGhgAnNRJPFRy8",
@@ -682,7 +820,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
@@ -692,7 +833,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
@@ -702,7 +846,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
@@ -712,7 +859,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
@@ -722,7 +872,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
@@ -733,7 +886,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -749,72 +905,90 @@
       "lng": 76.9654108,
       "mapsUrl": "https://maps.app.goo.gl/VVkVAUnGhjLxtBkx5",
       "active": true,
-      "observedOn": "2026-11-23",
+      "observedOn": "2026-11-27",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": null,
+      "updatedAt": "2026-11-27T00:59:55.531Z",
       "prayers": [
         {
           "prayer": "fajr",
-          "adhan": "05:07",
-          "iqamah": "05:27",
-          "observedOn": "2026-11-23",
+          "adhan": "05:09",
+          "iqamah": "05:29",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
-          "adhan": "12:08",
-          "iqamah": "12:23",
-          "observedOn": "2026-11-23",
+          "adhan": "12:10",
+          "iqamah": "12:25",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
-          "adhan": "15:28",
-          "iqamah": "15:43",
-          "observedOn": "2026-11-23",
+          "adhan": "15:29",
+          "iqamah": "15:44",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
-          "adhan": "17:56",
-          "iqamah": "18:12",
-          "observedOn": "2026-11-23",
+          "adhan": "17:57",
+          "iqamah": "18:03",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
-          "adhan": "19:10",
-          "iqamah": "19:25",
-          "observedOn": "2026-11-23",
+          "adhan": "19:11",
+          "iqamah": "19:26",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
           "adhan": "12:20",
           "iqamah": "13:00",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -825,80 +999,95 @@
       "name_ta": "மஸ்ஜிதுல் கவுசர்",
       "mapsName": null,
       "affiliation": null,
-      "address_ta": "165, G.M. Nagar, Pulian Thoppu, Kurichi, Coimbatore, Tamil Nadu 641023.",
-      "lat": null,
-      "lng": null,
+      "address_ta": "165, G.M. Nagar, Pulian Thoppu, Kurichi",
+      "lat": 10.985189,
+      "lng": 76.975202,
       "mapsUrl": "https://maps.app.goo.gl/NEVTinzoGEME41UT6",
       "active": true,
-      "observedOn": "2026-11-23",
+      "observedOn": "2026-11-27",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": null,
+      "updatedAt": "2026-11-27T10:56:06.213Z",
       "prayers": [
         {
           "prayer": "fajr",
-          "adhan": "05:05",
-          "iqamah": "05:35",
-          "observedOn": "2026-11-23",
+          "adhan": "05:10",
+          "iqamah": "05:40",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
           "adhan": "12:40",
           "iqamah": "13:00",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": true,
+          "fixedBasis": "Confirmed with Kausar Masjid",
+          "fixedCheckedOn": "2026-11-27"
         },
         {
           "prayer": "asr",
           "adhan": "16:00",
           "iqamah": "16:15",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": true,
+          "fixedBasis": "Confirmed with Kausar Masjid",
+          "fixedCheckedOn": "2026-11-27"
         },
         {
           "prayer": "maghrib",
           "adhan": "18:00",
-          "iqamah": {
-            "type": "after_adhan",
-            "offsetMin": 0
-          },
-          "observedOn": "2026-11-23",
+          "iqamah": "18:03",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
           "adhan": "20:00",
           "iqamah": "20:15",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": true,
+          "fixedBasis": "Confirmed with Kausar Masjid",
+          "fixedCheckedOn": "2026-11-27"
         },
         {
           "prayer": "jumuah",
           "adhan": "12:40",
           "iqamah": "13:30",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-23",
+          "observedOn": "2026-11-27",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -908,165 +1097,195 @@
       "name_en": "Irshadhul Muslim Masjid",
       "name_ta": "இர்ஷாதுல் முஸ்லிம் மஸ்ஜித்",
       "mapsName": null,
-      "affiliation": "SUNNAT JAMAAT",
-      "address_ta": "55/2A, JK Garden, Raha Avenue, Pulian Thoppu, Kurichi, Coimbatore, Tamil Nadu 641023.",
-      "lat": null,
-      "lng": null,
+      "affiliation": "Sunnat Jamaat",
+      "address_ta": "55/2A, JK Garden, Raha Avenue, Pulian Thoppu, Kurichi",
+      "lat": 10.98601,
+      "lng": 76.967358,
       "mapsUrl": "https://maps.app.goo.gl/VLWAuR3jehJicpbg6",
       "active": true,
-      "observedOn": "2026-11-25",
+      "observedOn": "2026-11-26",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": "2026-11-25T08:09:07.009Z",
+      "updatedAt": "2026-11-26T12:46:12.105Z",
       "prayers": [
         {
           "prayer": "fajr",
-          "adhan": "05:02",
-          "iqamah": "05:22",
-          "observedOn": "2026-11-25",
+          "adhan": "05:05",
+          "iqamah": "05:25",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
           "adhan": "12:45",
           "iqamah": "13:00",
-          "observedOn": "2026-11-25",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
           "adhan": "16:00",
           "iqamah": "16:15",
-          "observedOn": "2026-11-25",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
           "adhan": "18:03",
-          "iqamah": {
-            "type": "after_adhan",
-            "offsetMin": 0
-          },
-          "observedOn": "2026-11-25",
+          "iqamah": "18:06",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
           "adhan": "19:17",
           "iqamah": "19:32",
-          "observedOn": "2026-11-25",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
           "adhan": "12:40",
           "iqamah": "13:30",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-25",
+          "observedOn": "2026-11-26",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
     },
     {
-      "id": "mifthahul-janna",
-      "name_en": "Mifthahul Janna Masjid",
+      "id": "mifthahul-jannah",
+      "name_en": "Mifthahul Jannah Masjid",
       "name_ta": "மிப்தாஹுல் ஜன்னா மஸ்ஜித்",
-      "mapsName": "Masjidul Ayesha Sunnath Jama-ath",
-      "affiliation": "SUNNAT JAMAAT",
-      "address_ta": "XXQ8+4R8, Lorry Pettai Road, JK Garden, Bilal Nagar, Pulian Thoppu, Coimbatore, Tamil Nadu 641023.",
-      "lat": null,
-      "lng": null,
-      "mapsUrl": "https://maps.app.goo.gl/Wm4JRb1Cjx2Z1QWf7",
+      "mapsName": "Mifthahul Jannah Masjid",
+      "affiliation": "Sunnat Jamaat",
+      "address_ta": "5, JK Garden, Raha Avenue, Pulian Thoppu, Ukkadam",
+      "lat": 10.987789,
+      "lng": 76.966968,
+      "mapsUrl": "https://maps.app.goo.gl/D13asdBHXS1CK4vo9?g_st=ac",
       "active": true,
-      "observedOn": "2026-11-24",
+      "observedOn": "2026-11-25",
       "source": "noticeboard_photo",
       "notes": null,
       "timingPattern": "fixed",
-      "updatedAt": null,
+      "updatedAt": "2026-11-25T13:19:08.718Z",
       "prayers": [
         {
           "prayer": "fajr",
           "adhan": "05:05",
           "iqamah": "05:35",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
           "adhan": "12:45",
           "iqamah": "13:00",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
           "adhan": "16:00",
           "iqamah": "16:15",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
           "adhan": "18:03",
-          "iqamah": {
-            "type": "after_adhan",
-            "offsetMin": 0
-          },
-          "observedOn": "2026-11-24",
+          "iqamah": "18:06",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
           "adhan": "19:16",
           "iqamah": "19:35",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
           "adhan": "12:40",
           "iqamah": "13:10",
           "timingPattern": "fixed",
-          "observedOn": "2026-11-24",
+          "observedOn": "2026-11-25",
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -1077,7 +1296,7 @@
       "name_ta": "மஸ்ஜிதுர் ரஹ்மான்",
       "mapsName": "Masjidur Rahman (TNTJ Kottaipudur Branch)",
       "affiliation": "TNTJ",
-      "address_ta": "XXPG+VH7, Unnamed Road, GM Nagar, Pulian Thoppu, Coimbatore, Tamil Nadu 641023",
+      "address_ta": "Kottaipudur ,GM Nagar, Pulian Thoppu, Ukkadam",
       "lat": 10.9871542,
       "lng": 76.9764148,
       "mapsUrl": "https://maps.app.goo.gl/cajxKa3sGYhc1HYB9",
@@ -1096,7 +1315,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
@@ -1106,7 +1328,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
@@ -1116,7 +1341,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
@@ -1126,7 +1354,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
@@ -1136,7 +1367,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
@@ -1147,7 +1381,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -1158,7 +1395,7 @@
       "name_ta": "மஸ்ஜிதுல் ஃபஸ்ஸாம்",
       "mapsName": "Masjidul Fassam (JAQH)",
       "affiliation": "JAQH",
-      "address_ta": "Masjidul Fassam, GM Nagar, Pulian Thoppu, Coimbatore, Tamil Nadu 641023",
+      "address_ta": "GM Nagar, Pulian Thoppu, Ukkadam",
       "lat": 10.9873158,
       "lng": 76.9716954,
       "mapsUrl": "https://maps.app.goo.gl/86WuG7WD7EwHUNjS9",
@@ -1177,7 +1414,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
@@ -1187,7 +1427,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
@@ -1197,7 +1440,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
@@ -1207,7 +1453,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
@@ -1217,7 +1466,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
@@ -1228,7 +1480,10 @@
           "effectiveFrom": null,
           "source": "noticeboard_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
@@ -1238,8 +1493,8 @@
       "name_en": "GM Nagar Muslim Masjid",
       "name_ta": "ஜி.எம். நகர் முஸ்லிம் மஸ்ஜித்",
       "mapsName": null,
-      "affiliation": "SUNNAT JAMAAT",
-      "address_ta": null,
+      "affiliation": "Sunnat Jamaat",
+      "address_ta": "GM Nagar, Pulian Thoppu, Ukkadam",
       "lat": 10.98801,
       "lng": 76.970163,
       "mapsUrl": "https://maps.app.goo.gl/125jiwRLLBQsvzFG7",
@@ -1258,7 +1513,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "dhuhr",
@@ -1268,7 +1526,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "asr",
@@ -1278,7 +1539,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "maghrib",
@@ -1288,7 +1552,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "isha",
@@ -1298,7 +1565,10 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         },
         {
           "prayer": "jumuah",
@@ -1309,11 +1579,114 @@
           "effectiveFrom": null,
           "source": "digital_timetable_photo",
           "handwritten": false,
-          "unclear": false
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
+        }
+      ],
+      "additionalObservances": []
+    },
+    {
+      "id": "fathhul-islam-masjid",
+      "name_en": "Fathhul Islam Masjid",
+      "name_ta": "ஃபத்ஹுல் இஸ்லாம் மஸ்ஜித்",
+      "mapsName": null,
+      "affiliation": "Sunnat Jamaat",
+      "address_ta": "Lorry Pettai, South Ukkadam.",
+      "lat": 10.986394,
+      "lng": 76.962839,
+      "mapsUrl": "https://maps.app.goo.gl/8CF3ftKVBpVQFYfq5",
+      "active": true,
+      "observedOn": "2026-11-26",
+      "source": "noticeboard_photo",
+      "notes": null,
+      "timingPattern": "fixed",
+      "updatedAt": "2026-11-26T13:56:16.431Z",
+      "prayers": [
+        {
+          "prayer": "fajr",
+          "adhan": "05:05",
+          "iqamah": "05:21",
+          "observedOn": "2026-11-26",
+          "effectiveFrom": null,
+          "source": "noticeboard_photo",
+          "handwritten": false,
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
+        },
+        {
+          "prayer": "dhuhr",
+          "adhan": "12:45",
+          "iqamah": "13:00",
+          "observedOn": "2026-11-26",
+          "effectiveFrom": null,
+          "source": "noticeboard_photo",
+          "handwritten": false,
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
+        },
+        {
+          "prayer": "asr",
+          "adhan": "16:00",
+          "iqamah": "16:15",
+          "observedOn": "2026-11-26",
+          "effectiveFrom": null,
+          "source": "noticeboard_photo",
+          "handwritten": false,
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
+        },
+        {
+          "prayer": "maghrib",
+          "adhan": "18:03",
+          "iqamah": "18:06",
+          "observedOn": "2026-11-26",
+          "effectiveFrom": null,
+          "source": "noticeboard_photo",
+          "handwritten": false,
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
+        },
+        {
+          "prayer": "isha",
+          "adhan": "19:17",
+          "iqamah": "19:33",
+          "observedOn": "2026-11-26",
+          "effectiveFrom": null,
+          "source": "noticeboard_photo",
+          "handwritten": false,
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
+        },
+        {
+          "prayer": "jumuah",
+          "adhan": "12:40",
+          "iqamah": "13:30",
+          "timingPattern": "fixed",
+          "observedOn": "2026-11-26",
+          "effectiveFrom": null,
+          "source": "noticeboard_photo",
+          "handwritten": false,
+          "unclear": false,
+          "fixed": null,
+          "fixedBasis": null,
+          "fixedCheckedOn": null
         }
       ],
       "additionalObservances": []
     }
   ],
+  "validationWarnings": [],
   "sourceStale": false
 }
