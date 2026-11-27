@@ -12,6 +12,10 @@ export interface PrayerRecord {
   handwritten: boolean;
   unclear: boolean;
   timingPattern?: TimingPattern;
+  /** Confirmation applies to the prayer's complete Adhan and Iqamah schedule. */
+  fixed?: boolean | null;
+  fixedBasis?: string | null;
+  fixedCheckedOn?: string | null;
 }
 
 export type TimingPattern = "fixed" | "seasonal" | "variable" | "unknown";

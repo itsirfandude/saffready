@@ -33,6 +33,11 @@ export const STRINGS = {
     ta: "Live timetable கிடைக்கவில்லை · bundled data காட்டப்படுகிறது",
   },
   untilIqamah: { en: "Until Iqamah", ta: "இகாமத்துக்கு இன்னும்" },
+  fixedTimingsDisclaimer: {
+    en: "★ Longstanding Salah timings confirmed by the Masjid. Timings may change.",
+    ta: "★ மஸ்ஜித் உறுதிப்படுத்திய நீண்டகால தொழுகை நேரங்கள். நேரங்கள் மாறக்கூடும்.",
+  },
+  fixedTimingIndicator: { en: "Masjid-confirmed longstanding timing", ta: "மஸ்ஜித் உறுதிப்படுத்திய நீண்டகால நேரம்" },
   observationDatesIncomplete: { en: "Observation date unavailable", ta: "பதிவு தேதி கிடைக்கவில்லை" },
   walk: { en: "~{n} min walk", ta: "நடை ~{n} நிமி" },
   bike: { en: "~{n} min by bike", ta: "பைக் ~{n} நிமி" },
