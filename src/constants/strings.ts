@@ -34,8 +34,8 @@ export const STRINGS = {
   },
   untilIqamah: { en: "Until Iqamah", ta: "இகாமத்துக்கு இன்னும்" },
   fixedTimingsDisclaimer: {
-    en: "★ Longstanding Salah timings confirmed by the Masjid. Timings may change.",
-    ta: "★ மஸ்ஜித் உறுதிப்படுத்திய நீண்டகால தொழுகை நேரங்கள். நேரங்கள் மாறக்கூடும்.",
+    en: "● Unchanged Salah timings as confirmed by the Masjid.",
+    ta: "● மாறாத தொழுகை நேரங்கள் என மஸ்ஜிதால் உறுதிப்படுத்தப்பட்டுள்ளது.",
   },
   fixedTimingIndicator: { en: "Masjid-confirmed longstanding timing", ta: "மஸ்ஜித் உறுதிப்படுத்திய நீண்டகால நேரம்" },
   observationDatesIncomplete: { en: "Observation date unavailable", ta: "பதிவு தேதி கிடைக்கவில்லை" },
